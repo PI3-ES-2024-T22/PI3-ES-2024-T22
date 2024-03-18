@@ -13,6 +13,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var buttonLogout: Button
     private lateinit var textView: TextView
+    private lateinit var btn_cad_cartao: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         buttonLogout = findViewById(R.id.btn_logout)
-        textView = findViewById(R.id.user_details)
+        btn_cad_cartao = findViewById(R.id.btn_cad_cartao)
 
         buttonLogout.setOnClickListener {
             auth.signOut()
@@ -28,7 +30,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        btn_cad_cartao.setOnClickListener {
+            val intent = Intent(applicationContext, CadastrarCartao::class.java)
+            startActivity(intent)
+            finish()
+
+            //if () --> SE O CARTAO ESTIVER CADASTRADO --> LIBERA OUTRAS FUNCOES DO APLICATIVO PARA O USUARIO
+        }
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -37,8 +48,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(applicationContext, Login::class.java)
             startActivity(intent)
             finish()
-        } else {
-            textView.text = currentUser.email
         }
     }
 }
