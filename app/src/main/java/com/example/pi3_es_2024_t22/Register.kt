@@ -21,7 +21,6 @@ class Register : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var textView: TextView
     private lateinit var auth: FirebaseAuth
-
     private lateinit var database: DatabaseReference // Declarando a variavel DatabaseReference que vai linkar o banco com o back
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,12 +70,14 @@ class Register : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     progressBar.visibility = View.GONE // Oculta a barra de progresso
                     if (task.isSuccessful) {
-                        // Logica para salvar no RealTime DataBase
+
+                        //Logica para salvar no RealTime DataBase
                         val user = auth.currentUser //Obtem o usuario atualmente autenticado
                         user?.let {
                             val userId = it.uid //Pega ID do usuario atual autenticado
                             val userRef = database.child(userId) //Conecta banco de dados e a tabela Pessoas para o Usuario autenticado no momento
                             userRef.child("email").setValue(email) //Salva no banco de dados o email do usuario atual autenticado
+                        
                             Toast.makeText(
                                 baseContext,
                                 "Authentication was successful.",
