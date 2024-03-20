@@ -6,4 +6,6 @@
     </style>
 
     <style name="Theme.PI3ES2024T22" parent="Base.Theme.PI3ES2024T22" />
+
+    <style name="Theme.Material3.Light" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
