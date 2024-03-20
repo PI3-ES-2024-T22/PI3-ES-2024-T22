@@ -76,7 +76,7 @@ class Register : AppCompatActivity() {
                         user?.let {
                             val userId = it.uid //Pega ID do usuario atual autenticado
                             val userRef = database.child(userId) //Conecta banco de dados e a tabela Pessoas para o Usuario autenticado no momento
-                            userRef.child("email").setValue(email) //Salva no banco de dados o email do usuario atual autenticado
+                            userRef.child("Email").setValue(email) //Salva no banco de dados o email do usuario atual autenticado
                         
                             Toast.makeText(
                                 baseContext,
