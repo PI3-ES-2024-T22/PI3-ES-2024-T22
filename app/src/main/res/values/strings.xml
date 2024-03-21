@@ -22,5 +22,13 @@
     <string name="registrar_se">Registrar-se</string>
     <string name="concluir_login">Concluir Login</string>
     <string name="concluir_registro">Concluir Registro</string>
+    <string name="esqueceu_sua_senha">Esqueceu sua senha?</string>
+    <string name="j_possui_uma_conta_fa_a_login_aqui">Já possui uma conta? Faça login aqui.</string>
+    <string name="enviar_solicitacao">enviar_solicitacao</string>
+    <string name="esqueci_minha_senha">esqueci_minha_senha</string>
+    <string name="esqueci_a_minha_senha">Esqueci a minha senha</string>
+    <string name="enviarso_solicita_o">Enviarso solicitação</string>
+    <string name="enviar_solicita_o">enviar solicitação</string>
+    <string name="ja_possui_uma_conta_toque_para_realizar_o_login">Ja possui uma conta? Toque para realizar o login</string>
     <string name="toque_para_realizar_o_login">Toque para realizar o Login</string>
 </resources>
