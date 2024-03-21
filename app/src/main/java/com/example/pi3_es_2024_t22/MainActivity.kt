@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var buttonLogout: Button
-    private lateinit var textView: TextView
+    //private lateinit var textView: TextView
     private lateinit var btn_cad_cartao: TextView
 
 
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btn_cad_cartao.setOnClickListener {
-            val intent = Intent(applicationContext, CadastrarCartao::class.java)
+            val intent = Intent(applicationContext, RegisterCreditCard::class.java)
             startActivity(intent)
             finish()
 

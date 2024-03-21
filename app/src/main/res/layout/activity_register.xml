@@ -10,13 +10,73 @@
     tools:context=".Register">
 
     <TextView
-        android:text="@string/register"
+        android:text="@string/registrar_se"
         android:textSize="25sp"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginBottom="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Nome_Completo"
+            android:hint="@string/nome_completo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/N_Celular"
+            android:hint="@string/numero_de_celular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/CPF"
+            android:hint="@string/cpf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Data_Nascimento"
+            android:hint="@string/data_de_nascimento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Perfil_Usuario"
+            android:hint="@string/cliente_ou_gerente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -36,7 +96,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
-            android:hint="@string/password"
+            android:hint="@string/senha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -50,7 +110,7 @@
     </ProgressBar>
 
     <Button
-        android:text="@string/register"
+        android:text="@string/concluir_registro"
         android:id="@+id/btn_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -62,10 +122,9 @@
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginTop="20dp"
-        android:text="@string/click_to_login"
+        android:text="@string/toque_para_realizar_o_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </TextView>
-
 
 </LinearLayout>

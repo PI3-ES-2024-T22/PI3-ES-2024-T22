@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "919405140178",
-    "firebase_url": "https://puc-lock-default-rtdb.firebaseio.com",
-    "project_id": "puc-lock",
-    "storage_bucket": "puc-lock.appspot.com"
+    "project_number": "792511818891",
+    "firebase_url": "https://puck-lock-default-rtdb.firebaseio.com",
+    "project_id": "puck-lock",
+    "storage_bucket": "puck-lock.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:919405140178:android:6a5c1ff9303d516ed9f50b",
+        "mobilesdk_app_id": "1:792511818891:android:a400e7d4976828c98e388e",
         "android_client_info": {
           "package_name": "com.example.pi3_es_2024_t22"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBYKzpGZRGjhYMuRUhiexeiLU1hXC-W_0o"
+          "current_key": "AIzaSyA1n8dc1wirCZKWkbr9MvC9GWEaoTj7QHU"
         }
       ],
       "services": {
