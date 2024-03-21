@@ -11,4 +11,16 @@
     <string name="title_activity_cadastrar_cartao">CadastrarCartao</string>
     <string name="cadastrar_cartao">Cadastrar cartao</string>
     <string name="concluir">Concluir</string>
+    <string name="concluir_cadastro">Concluir Cadastro</string>
+    <string name="nome_completo">Nome Completo</string>
+    <string name="numero_de_celular">Numero de celular</string>
+    <string name="cpf">CPF</string>
+    <string name="data_de_nascimento">Data de Nascimento</string>
+    <string name="cliente_ou_gerente">Cliente ou Gerente?</string>
+    <string name="toque_para_se_registrar">Toque para se Registrar</string>
+    <string name="senha">Senha</string>
+    <string name="registrar_se">Registrar-se</string>
+    <string name="concluir_login">Concluir Login</string>
+    <string name="concluir_registro">Concluir Registro</string>
+    <string name="toque_para_realizar_o_login">Toque para realizar o Login</string>
 </resources>
