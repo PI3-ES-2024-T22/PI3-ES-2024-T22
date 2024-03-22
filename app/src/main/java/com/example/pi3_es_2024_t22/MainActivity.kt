@@ -12,9 +12,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var buttonLogout: Button
-    //private lateinit var textView: TextView
     private lateinit var btn_cad_cartao: TextView
-
+    private lateinit var btn_continue: button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         buttonLogout = findViewById(R.id.btn_logout)
         btn_cad_cartao = findViewById(R.id.btn_cad_cartao)
+        btn_continue = findViewById(R.id.btn_prosseguir)
 
         buttonLogout.setOnClickListener {
             auth.signOut()
@@ -36,18 +36,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
 
-            //if () --> SE O CARTAO ESTIVER CADASTRADO --> LIBERA OUTRAS FUNCOES DO APLICATIVO PARA O USUARIO
+            //SE O CARTAO ESTIVER CADASTRADO --> LIBERA OUTRAS FUNCOES DO APLICATIVO PARA O USUARIO
         }
-    }
 
-
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            val intent = Intent(applicationContext, Login::class.java)
-            startActivity(intent)
-            finish()
+        btn_continue.setOnClickListener {
+            // val intent = Intent(applicationContext, AlocarArmario::class.java)
+            // startActivity(intent)
+            // finish()
         }
     }
 }

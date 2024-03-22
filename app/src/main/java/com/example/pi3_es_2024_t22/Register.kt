@@ -118,6 +118,7 @@ class Register : AppCompatActivity() {
                             userRef.child("CPF").setValue(cpf)
                             userRef.child("Data de Nascimento").setValue(data_nascimento)
                             userRef.child("Perfil").setValue(perfil)
+                            userRef.child("Cartão").setValue()
 
                             Toast.makeText(
                                 baseContext,
