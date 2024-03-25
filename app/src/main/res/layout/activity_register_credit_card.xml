@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="@string/Concluir_cadastro"
+        android:text="@string/concluir_cadastro"
         android:layout_margin="12dp" />
 
 </RelativeLayout>

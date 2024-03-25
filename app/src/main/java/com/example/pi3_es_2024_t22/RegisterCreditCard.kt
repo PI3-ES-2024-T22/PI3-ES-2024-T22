@@ -17,6 +17,7 @@ class RegisterCreditCard : AppCompatActivity() {
     private lateinit var cardForm: CardForm
     private lateinit var database: DatabaseReference
     private lateinit var btn_concluir: Button
+    private var userId = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,13 +25,8 @@ class RegisterCreditCard : AppCompatActivity() {
         setContentView(R.layout.activity_register_credit_card)
 
         cardForm = findViewById(R.id.cardForm)
-        //val userRef = FirebaseDatabase.getInstance().getReference("Pessoas")
-
-        database = FirebaseAuth.getInstance().currentUser?.uid?.let { //Pegar o ID do usuário logado
-            FirebaseDatabase.getInstance().getReference("Pessoas").child(it) //Pegar a referência DA TABELA PESSOAS do usuário logado
-        } 
-
         btn_concluir = findViewById(R.id.btn_concluir)
+        database = FirebaseDatabase.getInstance().getReference("Pessoas").child(userId!!) //Acessar informacoes do usuario de dentro do seu ID
 
         cardForm.cardRequired(true)
             .expirationRequired(true)
@@ -68,7 +64,7 @@ class RegisterCreditCard : AppCompatActivity() {
                         numeroCartao = cardForm.cardNumber
                     )
 
-                    userRef.child("Cartão").setValue(cartao)
+                    userRef.child("Cartao").setValue(cartao)
 
                     //Após cadastrar cartão -> continua com o app
                     // val intent = Intent(applicationContext, AlocarArmario::class.java)
@@ -105,10 +101,8 @@ class RegisterCreditCard : AppCompatActivity() {
 //         "Cartao": {
 //           "nomeCartao": "Ciclano de Tal",
 //           "numeroCartao": "9876 5432 1098 7654",
-//           "dataValidade": "05/23",
-//           "cvv": "456"
+
 //         }
 //       }
 //     }
 //   }
-  

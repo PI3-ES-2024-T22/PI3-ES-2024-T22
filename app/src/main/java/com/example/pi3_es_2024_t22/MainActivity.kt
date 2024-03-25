@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var buttonLogout: Button
     private lateinit var btn_cad_cartao: TextView
-    private lateinit var btn_continue: button
+    private lateinit var btn_continue: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +39,9 @@ class MainActivity : AppCompatActivity() {
             //SE O CARTAO ESTIVER CADASTRADO --> LIBERA OUTRAS FUNCOES DO APLICATIVO PARA O USUARIO
         }
 
-        btn_continue.setOnClickListener {
-            // val intent = Intent(applicationContext, AlocarArmario::class.java)
-            // startActivity(intent)
-            // finish()
+        //Após cadastrar cartão -> continua com o app
+        // val intent = Intent(applicationContext, AlocarArmario::class.java)
+        // startActivity(intent)
+        // finish()
         }
     }
-}
