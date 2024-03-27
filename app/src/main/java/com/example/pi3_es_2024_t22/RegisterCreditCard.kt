@@ -26,7 +26,7 @@ class RegisterCreditCard : AppCompatActivity() {
 
         cardForm = findViewById(R.id.cardForm)
         btn_concluir = findViewById(R.id.btn_concluir)
-        database = FirebaseDatabase.getInstance().getReference("Pessoas").child(userId!!) //Acessar informacoes do usuario de dentro do seu ID
+        database = FirebaseDatabase.getInstance().getReference("Pessoas").child(userId!!) //Acessa tabela Pessoas dentro do campo do ID (ja criado)
 
         cardForm.cardRequired(true)
             .expirationRequired(true)
@@ -52,7 +52,7 @@ class RegisterCreditCard : AppCompatActivity() {
                 val user = FirebaseAuth.getInstance().currentUser
                 user?.let {
                     val userID = it.uid
-                    val userRef = database.child(userID)
+                    val userRef = database.child(userID) //Cria um novo ID dentro do no pessoas
 
                     data class Cartao(
                         val nomeCartao: String,
@@ -64,7 +64,7 @@ class RegisterCreditCard : AppCompatActivity() {
                         numeroCartao = cardForm.cardNumber
                     )
 
-                    userRef.child("Cartao").setValue(cartao)
+                    userRef.child("Cartao").setValue(cartao)//Insere informacoes dentro do ID dentro da tabela PESSOAS
 
                     //Após cadastrar cartão -> continua com o app
                     // val intent = Intent(applicationContext, AlocarArmario::class.java)
