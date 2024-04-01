@@ -44,7 +44,7 @@ class Register : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         textView = findViewById(R.id.loginNow)
         auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance().getReference("Pessoas")
+        database = FirebaseDatabase.getInstance().getReference("Pessoas") //Acessa tabela Pessoas
 
         textView.setOnClickListener {
             val intent = Intent(this@Register, Login::class.java)
@@ -112,8 +112,8 @@ class Register : AppCompatActivity() {
                         val user = auth.currentUser
                         user?.let {
                             val userId = it.uid
-                            val userRef = database.child(userId)
-                            userRef.child("Email").setValue(email)
+                            val userRef = database.child(userId) //Cria um ID do usuario dentro da tabela pessoas
+                            userRef.child("Email").setValue(email) //Insere informacoes dentro do ID dentro da tabela PESSOAS
                             userRef.child("Nome Completo").setValue(nome)
                             userRef.child("CPF").setValue(cpf)
                             userRef.child("Data de Nascimento").setValue(data_nascimento)

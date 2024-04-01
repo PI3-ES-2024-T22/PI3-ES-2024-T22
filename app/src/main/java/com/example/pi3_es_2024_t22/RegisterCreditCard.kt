@@ -17,6 +17,7 @@ class RegisterCreditCard : AppCompatActivity() {
     private lateinit var cardForm: CardForm
     private lateinit var database: DatabaseReference
     private lateinit var btn_concluir: Button
+    private var userId = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,8 +25,8 @@ class RegisterCreditCard : AppCompatActivity() {
         setContentView(R.layout.activity_register_credit_card)
 
         cardForm = findViewById(R.id.cardForm)
-        database = FirebaseDatabase.getInstance().getReference("Pessoas")
         btn_concluir = findViewById(R.id.btn_concluir)
+        database = FirebaseDatabase.getInstance().getReference("Pessoas").child(userId!!) //Acessa tabela Pessoas dentro do campo do ID (ja criado)
 
         cardForm.cardRequired(true)
             .expirationRequired(true)
@@ -35,12 +36,12 @@ class RegisterCreditCard : AppCompatActivity() {
             .mobileNumberRequired(true)
             .setup(this@RegisterCreditCard)
 
-            //Falta resolver isso
-            cardForm.setCardNumberError("Número de cartão inválido")
-            cardForm.setExpirationError("Data de validade inválida")
-            cardForm.setCvvError("CVV inválido")
-            cardForm.setCardholderNameError("Nome do titular inválido")
-            cardForm.setMobileNumberError("Número de celular inválido")
+            //Falta resolver isso -> Mudança do idioma das validações dos campos de inserções
+            // cardForm.setCardNumberError("Número de cartão inválido")
+            // cardForm.setExpirationError("Data de validade inválida")
+            // cardForm.setCvvError("CVV inválido")
+            // cardForm.setCardholderNameError("Nome do titular inválido")
+            // cardForm.setMobileNumberError("Número de celular inválido")
 
         cardForm.cvvEditText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
 
@@ -51,11 +52,11 @@ class RegisterCreditCard : AppCompatActivity() {
                 val user = FirebaseAuth.getInstance().currentUser
                 user?.let {
                     val userID = it.uid
-                    val userRef = database.child(userID)
+                    val userRef = database.child(userID) //Cria um novo ID dentro do no pessoas
 
                     data class Cartao(
                         val nomeCartao: String,
-                        val numeroCartao: String
+                        val numeroCartao: String,
                     )
 
                     val cartao = Cartao(
@@ -63,7 +64,12 @@ class RegisterCreditCard : AppCompatActivity() {
                         numeroCartao = cardForm.cardNumber
                     )
 
-                    userRef.child("Cartão ").setValue(cartao)
+                    userRef.child("Cartao").setValue(cartao)//Insere informacoes dentro do ID dentro da tabela PESSOAS
+
+                    //Após cadastrar cartão -> continua com o app
+                    // val intent = Intent(applicationContext, AlocarArmario::class.java)
+                    // startActivity(intent)
+                    // finish()
                 }
             } else {
                 Toast.makeText(this@RegisterCreditCard, "Cartão inválido, por favor, preencha novamente os campos", Toast.LENGTH_LONG).show()
@@ -71,3 +77,32 @@ class RegisterCreditCard : AppCompatActivity() {
         }
     }
 }
+
+//Quero atingir esse resultado no BD
+// {
+//     "Pessoas": {
+//       "userID_1": {
+//         "Email": "usuario1@example.com",
+//         "Nome Completo": "Fulano de Tal",
+//         "CPF": "123.456.789-00",
+//         "Data de Nascimento": "01/01/1990",
+//         "Perfil": "Cliente",
+//         "Cartao": {
+//           "nomeCartao": "Fulano de Tal",
+//           "numeroCartao": "1234 5678 9012 3456",
+//         }
+//       },
+//       "userID_2": {
+//         "Email": "usuario2@example.com",
+//         "Nome Completo": "Ciclano de Tal",
+//         "CPF": "987.654.321-00",
+//         "Data de Nascimento": "02/02/1995",
+//         "Perfil": "Gerente",
+//         "Cartao": {
+//           "nomeCartao": "Ciclano de Tal",
+//           "numeroCartao": "9876 5432 1098 7654",
+
+//         }
+//       }
+//     }
+//   }

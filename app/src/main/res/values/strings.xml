@@ -31,4 +31,5 @@
     <string name="enviar_solicita_o">enviar solicitação</string>
     <string name="ja_possui_uma_conta_toque_para_realizar_o_login">Ja possui uma conta? Toque para realizar o login</string>
     <string name="toque_para_realizar_o_login">Toque para realizar o Login</string>
+    <string name="continuar_sem_cart_o_de_cr_dito">Continuar sem cartão de crédito</string>
 </resources>

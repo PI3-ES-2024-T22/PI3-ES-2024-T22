@@ -19,4 +19,5 @@
         android:layout_alignParentEnd="true"
         android:text="@string/concluir_cadastro"
         android:layout_margin="12dp" />
+
 </RelativeLayout>
