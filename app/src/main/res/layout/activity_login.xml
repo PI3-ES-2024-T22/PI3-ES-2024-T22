@@ -3,15 +3,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
+    android:background="@drawable/backgraud_degrade"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:padding="15dp"
+    android:padding="25dp"
     android:layout_height="match_parent"
     android:gravity="center"
     tools:context=".Login">
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-550dp"
+        android:layout_margin="20dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
     <TextView
+        android:textColor="@color/white"
         android:text="@string/login"
         android:textSize="25sp"
         android:textStyle="bold"
@@ -28,7 +37,12 @@
             android:id="@+id/email"
             android:hint="@string/email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:background="@drawable/style_input"
+            android:padding="10dp"
+             />
+
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -39,8 +53,12 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
             android:hint="@string/password"
+            android:textSize="18sp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/style_input"
+            android:padding="10dp"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,32 +69,33 @@
         android:visibility="gone">
     </ProgressBar>
 
+    <TextView
+        android:id="@+id/forgotPass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="start"
+        android:text="@string/esqueceu_sua_senha"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
     <Button
-        android:text="@string/concluir_login"
         android:id="@+id/btn_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    </Button>
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/concluir_login"
+        android:background="@drawable/btn_rounded" />
 
     <TextView
         android:id="@+id/registerNow"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:gravity="center"
-        android:layout_marginTop="20dp"
         android:text="@string/toque_para_se_registrar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </TextView>
-
-
-    <TextView
-        android:id="@+id/forgotPass"
         android:textSize="15sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="@string/esqueceu_sua_senha"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:textStyle="bold" />
+
+
 </LinearLayout>

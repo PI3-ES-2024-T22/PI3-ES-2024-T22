@@ -112,9 +112,10 @@
     <Button
         android:text="@string/concluir_registro"
         android:id="@+id/btn_register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    </Button>
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btn_rounded"/>
 
     <TextView
         android:id="@+id/loginNow"

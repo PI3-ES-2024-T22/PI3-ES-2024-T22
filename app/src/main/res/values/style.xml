@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BordaEmail" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxStrokeWidth">1dp</item> <!-- Espessura da borda em dp -->
+        <item name="boxStrokeColor">@color/white</item> <!-- Cor da borda -->
+    </style><![CDATA[
+]]></resources>
