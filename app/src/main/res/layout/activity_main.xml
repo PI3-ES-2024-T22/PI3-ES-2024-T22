@@ -29,4 +29,11 @@
         android:text="@string/continuar_sem_cart_o_de_cr_dito"
         android:layout_margin="12dp" />
 
+    <Button
+        android:id="@+id/viewLockersButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/view_lockers"
+        android:layout_margin="12dp" />
+
 </LinearLayout>
