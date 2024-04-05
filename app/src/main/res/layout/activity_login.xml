@@ -13,11 +13,17 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-550dp"
+        android:layout_width="169dp"
+        android:layout_height="133dp"
         android:layout_margin="20dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:layout_marginTop="-550dp"
+        android:src="@mipmap/logop" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="289dp"
+        android:layout_height="33dp"
+        app:srcCompat="@mipmap/nomelogop" />
 
     <TextView
         android:textColor="@color/white"
@@ -69,6 +75,10 @@
         android:visibility="gone">
     </ProgressBar>
 
+    <Space
+        android:layout_width="370dp"
+        android:layout_height="13dp" />
+
     <TextView
         android:id="@+id/forgotPass"
         android:layout_width="match_parent"
@@ -78,6 +88,10 @@
         android:text="@string/esqueceu_sua_senha"
         android:textSize="15sp"
         android:textStyle="bold" />
+
+    <Space
+        android:layout_width="367dp"
+        android:layout_height="66dp" />
 
     <Button
         android:id="@+id/btn_login"
@@ -96,6 +110,10 @@
         android:text="@string/toque_para_se_registrar"
         android:textSize="15sp"
         android:textStyle="bold" />
+
+    <Space
+        android:layout_width="277dp"
+        android:layout_height="59dp" />
 
 
 </LinearLayout>
