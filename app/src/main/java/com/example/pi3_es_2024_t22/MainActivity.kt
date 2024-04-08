@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonLogout: Button
     private lateinit var btn_cad_cartao: TextView
     private lateinit var btn_continue: Button
-    private lateinit var viewLockersButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         buttonLogout = findViewById(R.id.btn_logout)
         btn_cad_cartao = findViewById(R.id.btn_cad_cartao)
         btn_continue = findViewById(R.id.btn_prosseguir)
-        viewLockersButton = findViewById(R.id.viewLockersButton)
 
         buttonLogout.setOnClickListener {
             auth.signOut()
@@ -40,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
-        viewLockersButton.setOnClickListener {
+        btn_continue.setOnClickListener {
             val intent = Intent(applicationContext, MapsActivity::class.java)
             startActivity(intent)
             finish()

@@ -36,4 +36,10 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name="view_lockers">Visualizar armarios</string>
     <string name="title_activity_maps2">MapsActivity2</string>
+    <string name="alugar">Alugar</string>
+    <string name="nome_do_local">Nome do Local</string>
+    <string name="endere_o_do_local">Endereço do Local</string>
+    <string name="pre_os_do_local">Preços do Local</string>
+    <string name="confirmar_compra">Confirmar Compra</string>
+    <string name="ver_pre_os">Ver Preços</string>
 </resources>

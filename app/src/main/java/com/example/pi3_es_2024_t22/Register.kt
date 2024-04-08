@@ -3,6 +3,7 @@ package com.example.pi3_es_2024_t22
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -58,9 +59,9 @@ class Register : AppCompatActivity() {
             val nome: String = editTextNome.text.toString()
             val numero: String = editTextNumero.text.toString()
             val cpf: String = editTextCPF.text.toString()
-            val data_nascimento: String = editTextDataNasc.text.toString()
+            val dataNascimento: String = editTextDataNasc.text.toString()
             val perfil: String = editTextPerfil.text.toString()
-            val cartao: String = "" // Defina o valor do cartão aqui
+            val cartao = "" // Defina o valor do cartão aqui
 
             if (TextUtils.isEmpty(nome) || !nome.matches("[a-zA-Z ]+".toRegex())) {
                 showError("Digite o nome completo")
@@ -77,7 +78,7 @@ class Register : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (TextUtils.isEmpty(data_nascimento) || !data_nascimento.matches("[0-9]{2}/[0-9]{2}/[0-9]{2}".toRegex())) {
+            if (TextUtils.isEmpty(dataNascimento) || !dataNascimento.matches("[0-9]{2}/[0-9]{2}/[0-9]{2}".toRegex())) {
                 showError("Digite a sua data de nascimento no formato 00/00/00")
                 return@setOnClickListener
             }
@@ -109,7 +110,7 @@ class Register : AppCompatActivity() {
                                 "Email" to email,
                                 "Nome Completo" to nome,
                                 "CPF" to cpf,
-                                "Data de Nascimento" to data_nascimento,
+                                "Data de Nascimento" to dataNascimento,
                                 "Perfil" to perfil,
                                 "Cartao" to cartao
                             )
@@ -123,6 +124,7 @@ class Register : AppCompatActivity() {
                                 }
                                 .addOnFailureListener { e ->
                                     showToast("Falha ao salvar informações: ${e.message}")
+                                    Log.e("Firestore", "Falha de permissão ao salvar informações: ${e.message}")
                                 }
                         }
                     } else {

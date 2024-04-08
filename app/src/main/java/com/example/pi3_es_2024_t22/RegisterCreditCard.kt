@@ -1,5 +1,6 @@
 package com.example.pi3_es_2024_t22
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import android.text.InputType
@@ -59,7 +60,6 @@ class RegisterCreditCard : AppCompatActivity() {
                         .addOnSuccessListener {
                             Toast.makeText(this@RegisterCreditCard, "Informações do cartão salvas com sucesso", Toast.LENGTH_LONG).show()
 
-                            //Após cadastrar cartão -> continua com o app
                             val intent = Intent(applicationContext, MapsActivity::class.java)
                             startActivity(intent)
                             finish()
