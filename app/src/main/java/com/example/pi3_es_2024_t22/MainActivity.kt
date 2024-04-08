@@ -45,11 +45,5 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-
-        //Após cadastrar cartão -> continua com o app
-        // val intent = Intent(applicationContext, AlocarArmario::class.java)
-        // startActivity(intent)
-        // finish()
-
-        }
     }
+}

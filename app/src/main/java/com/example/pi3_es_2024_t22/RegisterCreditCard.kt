@@ -60,9 +60,9 @@ class RegisterCreditCard : AppCompatActivity() {
                             Toast.makeText(this@RegisterCreditCard, "Informações do cartão salvas com sucesso", Toast.LENGTH_LONG).show()
 
                             //Após cadastrar cartão -> continua com o app
-                            // val intent = Intent(applicationContext, AlocarArmario::class.java)
-                            // startActivity(intent)
-                            // finish()
+                            val intent = Intent(applicationContext, MapsActivity::class.java)
+                            startActivity(intent)
+                            finish()
 
                         }
                         .addOnFailureListener { e ->
