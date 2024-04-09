@@ -3,12 +3,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/degrade"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/degrade"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="25dp"
-    android:layout_height="match_parent"
-    android:gravity="center"
     tools:context=".Login">
 
     <ImageView
@@ -17,23 +17,25 @@
         android:layout_height="133dp"
         android:layout_margin="20dp"
         android:layout_marginTop="-550dp"
-        android:src="@mipmap/logop" />
+        android:src="@mipmap/logop"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="289dp"
         android:layout_height="33dp"
-        app:srcCompat="@mipmap/nomelogop" />
+        app:srcCompat="@mipmap/nomelogop"
+        tools:ignore="ContentDescription" />
 
     <TextView
-        android:textColor="@color/white"
-        android:text="@string/login"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="@string/login"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -41,13 +43,12 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email"
-            android:hint="@string/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
             android:background="@drawable/style_input"
+            android:hint="@string/email"
             android:padding="10dp"
-             />
+            android:textSize="18sp" />
 
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -58,13 +59,12 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
-            android:hint="@string/password"
-            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/style_input"
+            android:hint="@string/password"
             android:padding="10dp"
-            />
+            android:textSize="18sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -72,8 +72,7 @@
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone">
-    </ProgressBar>
+        android:visibility="gone"></ProgressBar>
 
     <Space
         android:layout_width="370dp"
@@ -98,8 +97,8 @@
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="@string/concluir_login"
-        android:background="@drawable/btn_rounded" />
+        android:background="@drawable/btn_rounded"
+        android:text="@string/concluir_login" />
 
     <TextView
         android:id="@+id/registerNow"

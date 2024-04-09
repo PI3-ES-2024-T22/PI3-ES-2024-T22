@@ -3,12 +3,16 @@
     <string name="login">Login</string>
     <string name="email"><font color="#FFFFFF">Email</font></string>
     <string name="password"><font color="#FFFFFF">Senha</font></string>
-    <string name="esqueceu_sua_senha"><font color="#FFFFFF">Esqueceu sua senha?</font></string>
-    <string name="toque_para_se_registrar"><font color="#FFFFFF">Não tem uma conta?</font><font color="#34BAAB">Criar conta</font></string>
+    <string name="esqueceu_sua_senha"><font color="#FFFFFF">Esqueceu sua senha?</font><font color="#34BAAB"> Clique aqui</font> </string>
+    <string name="toque_para_se_registrar"><font color="#FFFFFF">Não tem uma conta?</font><font color="#34BAAB"> Criar conta</font></string>
     <string name="concluir_login"><font color="#FFFFFF">Continuar</font></string>
 
 
     <string name="concluir_registro"><font color="#FFFFFF">Concluir</font></string>
+    <string name="esqueci_minha_senha">esqueci_minha_senha</string>
+    <string name="esqueci_a_minha_senha"><font color="#FFFFFF">Solicitar recuperação senha</font></string>
+
+
 
     <string name="register">Register</string>
     <string name="click_to_login">Click to Login</string>
@@ -32,11 +36,12 @@
 
     <string name="j_possui_uma_conta_fa_a_login_aqui">Já possui uma conta? Faça login aqui.</string>
     <string name="enviar_solicitacao">enviar_solicitacao</string>
-    <string name="esqueci_minha_senha">esqueci_minha_senha</string>
-    <string name="esqueci_a_minha_senha">Esqueci a minha senha</string>
+
+
     <string name="enviarso_solicita_o">Enviarso solicitação</string>
-    <string name="enviar_solicita_o">enviar solicitação</string>
-    <string name="ja_possui_uma_conta_toque_para_realizar_o_login">Ja possui uma conta? Toque para realizar o login</string>
+    <string name="enviar_solicita_o"><font color="#FFFFFF">enviar solicitação</font></string>
+    <string name="ja_possui_uma_conta_toque_para_realizar_o_login"><font color="#FFFFFF">Ja possui uma conta?
+    </font><font color="#34BAAB">Fazer login</font></string>
     <string name="toque_para_realizar_o_login">Toque para realizar o Login</string>
     <string name="continuar_sem_cart_o_de_cr_dito">Continuar sem cartão de crédito</string>
 </resources>
