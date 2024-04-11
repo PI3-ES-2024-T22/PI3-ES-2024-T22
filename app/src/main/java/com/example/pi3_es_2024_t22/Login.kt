@@ -31,13 +31,13 @@ class Login : AppCompatActivity() {
         super.onStart()
         val currentUser = auth.currentUser
 
-        if (currentUser != null) {
-            val intent = Intent(this@Login, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
+//        if (currentUser != null) {
+//            val intent = Intent(this@Login, MainActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
 
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -97,20 +97,24 @@ class Login : AppCompatActivity() {
                                     val perfil = snapshot.child("Perfil").getValue(String::class.java)
 
                                     // Verifica o tipo de usuário e direciona para a tela correspondente
-                                    if (perfil == "Gerente") {
-                                        //val intent = Intent(this@Login, TelaGerente::class.java)
-                                       //startActivity(intent)
+                                    when (perfil) {
+                                        "Gerente" -> {
+                                            //val intent = Intent(this@Login, TelaGerente::class.java)
+                                            //startActivity(intent)
 
-                                    } else if (perfil == "Cliente") {
-                                        //val intent = Intent(this@Login, TelaCliente::class.java)
-                                       //startActivity(intent)
+                                        }
+                                        "Cliente" -> {
+                                            //val intent = Intent(this@Login, TelaCliente::class.java)
+                                            //startActivity(intent)
 
-                                    } else {
-                                        Toast.makeText(
-                                            baseContext,
-                                            "Tipo de usuário inválido.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        }
+                                        else -> {
+                                            Toast.makeText(
+                                                baseContext,
+                                                "Tipo de usuário inválido.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     }
                                 }
 

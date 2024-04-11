@@ -38,10 +38,10 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
-        //Após cadastrar cartão -> continua com o app
-        // val intent = Intent(applicationContext, AlocarArmario::class.java)
-        // startActivity(intent)
-        // finish()
-
+        btn_continue.setOnClickListener {
+            val intent = Intent(applicationContext, MapsActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
+}
