@@ -6,11 +6,13 @@
     <string name="esqueceu_sua_senha"><font color="#FFFFFF">Esqueceu sua senha?</font><font color="#34BAAB"> Clique aqui</font> </string>
     <string name="toque_para_se_registrar"><font color="#FFFFFF">Não tem uma conta?</font><font color="#34BAAB"> Criar conta</font></string>
     <string name="concluir_login"><font color="#FFFFFF">Continuar</font></string>
+    <string name="Mapa"><font color="#FFFFFF">Visualizar Armários</font> </string>
 
 
     <string name="concluir_registro"><font color="#FFFFFF">Concluir</font></string>
     <string name="esqueci_minha_senha">esqueci_minha_senha</string>
     <string name="esqueci_a_minha_senha"><font color="#FFFFFF">Solicitar recuperação senha</font></string>
+    <string name="ou"><font color="#FFFFFF">OU</font></string>
 
 
 

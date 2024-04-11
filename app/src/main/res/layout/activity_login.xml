@@ -88,10 +88,6 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <Space
-        android:layout_width="367dp"
-        android:layout_height="66dp" />
-
     <Button
         android:id="@+id/btn_login"
         android:layout_width="280dp"
@@ -110,9 +106,42 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <Space
-        android:layout_width="277dp"
-        android:layout_height="59dp" />
+    <LinearLayout
+        android:layout_width="335dp"
+        android:layout_height="37dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="128dp"
+            android:layout_height="1dp"
+            android:background="@color/white">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textStyle="bold"
+            tools:text="@string/ou" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="128dp"
+            android:layout_height="1dp"
+            android:background="@color/white">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btn_rounded"
+        android:text="@string/Mapa" />
 
 
 </LinearLayout>
