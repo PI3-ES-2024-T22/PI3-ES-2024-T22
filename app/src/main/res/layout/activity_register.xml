@@ -7,16 +7,20 @@
     android:padding="15dp"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context=".Register">
+    tools:context=".Register"
+    android:background="@drawable/degrade"
+    >
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
         android:text="@string/registrar_se"
         android:textSize="25sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
+        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -25,8 +29,11 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/Nome_Completo"
             android:hint="@string/nome_completo"
+            android:background="@drawable/style_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="40dp"
+            android:paddingLeft="10dp"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -37,8 +44,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/N_Celular"
             android:hint="@string/numero_de_celular"
+            android:background="@drawable/style_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="40dp"
+            android:paddingLeft="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,8 +58,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/CPF"
             android:hint="@string/cpf"
+            android:background="@drawable/style_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="40dp"
+            android:paddingLeft="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -60,23 +71,52 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/Data_Nascimento"
+            android:layout_width="184dp"
+            android:layout_height="40dp"
+            android:background="@drawable/style_input"
             android:hint="@string/data_de_nascimento"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:paddingLeft="10dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"/>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/Perfil_Usuario"
-            android:hint="@string/cliente_ou_gerente"
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButton1"
+            android:layout_width="183dp"
+            android:layout_height="wrap_content"
+            android:buttonTint="#FFFFFF"
+            android:text="Cliente"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/radioButton2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:buttonTint="#FFFFFF"
+            android:text="Gerente"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+    </RadioGroup>
 
-    </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="@string/criar_conta"
+        android:textSize="25sp"
+        android:textStyle="bold"
+
+        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -85,8 +125,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email"
             android:hint="@string/email"
+            android:background="@drawable/style_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="40dp"
+            android:paddingLeft="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,8 +139,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
             android:hint="@string/senha"
+            android:background="@drawable/style_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="40dp"
+            android:paddingLeft="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -119,13 +163,12 @@
 
     <TextView
         android:id="@+id/loginNow"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="@string/toque_para_realizar_o_login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </TextView>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/toque_para_realizar_o_login"
+        android:textSize="16sp"
+        android:textStyle="bold"></TextView>
 
 </LinearLayout>

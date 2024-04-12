@@ -16,7 +16,7 @@
 
 
 
-    <string name="register">Register</string>
+    <string name="register"><font color="#FFFFFF">Register</font></string>
     <string name="click_to_login">Click to Login</string>
     <string name="click_to_register">Click to Register</string>
     <string name="logout">logout</string>
@@ -32,8 +32,9 @@
     <string name="cliente_ou_gerente">Cliente ou Gerente?</string>
 
     <string name="senha">Senha</string>
-    <string name="registrar_se">Registrar-se</string>
-
+    <string name="registrar_se"><font color="#FFFFFF">Informações Pessoais</font></string>
+    <string name="toque_para_realizar_o_login"><font color="#FFFFFF">Já tem uma conta?</font><font color="#34BAAB">Fazar login</font></string>
+    <string name="criar_conta"><font color="#FFFFFF">Criar Conta</font></string>
 
 
     <string name="j_possui_uma_conta_fa_a_login_aqui">Já possui uma conta? Faça login aqui.</string>
@@ -44,7 +45,6 @@
     <string name="enviar_solicita_o"><font color="#FFFFFF">enviar solicitação</font></string>
     <string name="ja_possui_uma_conta_toque_para_realizar_o_login"><font color="#FFFFFF">Ja possui uma conta?
     </font><font color="#34BAAB">Fazer login</font></string>
-    <string name="toque_para_realizar_o_login">Toque para realizar o Login</string>
     <string name="continuar_sem_cart_o_de_cr_dito">Continuar sem cartão de crédito</string>
     <string name="MAPS_API_KEY">AIzaSyBzgLroNVUivmkYw8nsOMSi2Y-1OYnDou8</string>
     <string name="title_activity_maps">MapsActivity</string>
@@ -56,4 +56,15 @@
     <string name="pre_os_do_local">Preços do Local</string>
     <string name="confirmar_compra">Confirmar Compra</string>
     <string name="ver_pre_os">Ver Preços</string>
+
+
+    <string name="cadastro_do_cartao"><font color="#FFFFFF">Cadastro do cartão</font></string>
+    <string name="numero_do_cartao"><font color="#FFFFFF">Número do cartão</font></string>
+    <string name="nome_no_cartao"><font color="#FFFFFF">Nome</font></string>
+    <string name="cvc"><font color="#FFFFFF">CVC</font></string>
+    <string name="validade"><font color="#FFFFFF">Validade</font></string>
+    <string name="cadastrar"><font color="#FFFFFF">Cadastrar</font></string>
+
+
+
 </resources>
