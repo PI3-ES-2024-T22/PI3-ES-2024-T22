@@ -15,6 +15,8 @@ import com.example.pi3_es_2024_t22.databinding.ActivityMapsBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 import android.widget.TextView
+import android.widget.Spinner
+import android.widget.ArrayAdapter
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -28,13 +30,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         buttonloc = findViewById(R.id.btnloc)
         firebaseFirestore = FirebaseFirestore.getInstance()
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        val pocolocoLocation = LatLng(-22.835436, -47.0544414)
+
+        mMap.addMarker(MarkerOptions().position(pocolocoLocation).title("Poco Loco Bar"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pocolocoLocation, 14f))
+
+        mMap.setOnMarkerClickListener { marker ->
+                buttonloc.visibility = Button.VISIBLE
+            true
+        }
 
         buttonloc.setOnClickListener {
             if (currentHour >= 7 && currentHour < 18) {
@@ -61,23 +75,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     "longitude" to pocolocoLocation.longitude.toString()
                 )
 
-                showLocationInfoPopup()
-
                 firebaseFirestore.collection("locais")
                     .add(local)
                     .addOnSuccessListener { documentReference ->
-                        Toast.makeText(
-                            this,
-                            "Informações do local adicionadas com sucesso!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val documentId = documentReference.id // Obtendo o ID do documento recém-inserido
+                        showLocationInfoPopup(documentId) // Passando o ID do documento para a função
                     }
-                    .addOnFailureListener { exception ->
-                        Toast.makeText(
-                            this,
-                            "Erro ao adicionar informações do local: ${exception.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Erro ao inserir local: $e", Toast.LENGTH_SHORT).show()
                     }
             } else {
                 Toast.makeText(this, "Locação disponível apenas entre 7h e 18h", Toast.LENGTH_SHORT)
@@ -86,27 +91,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-        val pocolocoLocation = LatLng(-22.835436, -47.0544414)
-
-        mMap.addMarker(MarkerOptions().position(pocolocoLocation).title("Poco Loco Bar"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pocolocoLocation, 14f))
-    }
-
-    private fun showLocationInfoPopup() {
+    private fun showLocationInfoPopup(documentId: String) {
         val dialogView = layoutInflater.inflate(R.layout.location_info_popup, null)
-
         val textViewLocationName = dialogView.findViewById<TextView>(R.id.locationName)
         val textViewLocationAddress = dialogView.findViewById<TextView>(R.id.locationAddress)
-        val textViewLocationPrices = dialogView.findViewById<TextView>(R.id.locationPrices)
+        val locationPricesSpinner: Spinner = dialogView.findViewById(R.id.locationPricesSpinner)
         val buttonConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
 
-        // Aqui você pode recuperar as informações do Firestore e preencher os TextViews
-        // Exemplo:
         firebaseFirestore.collection("locais")
-            .document("seu_documento_de_local")
+            .document(documentId) // Usando o ID do documento
             .get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
@@ -118,14 +111,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     val preco4Horas = document.getString("preco_4_horas")
                     val precoAte18 = document.getString("preco_ate_18")
 
-                    // Aqui você pode montar a string com os preços
-                    val pricesText = "Preços:\n30min = R$ $preco30Min\n1h = R$ $preco1Hora\n2h = R$ $preco2Horas\n4h = R$ $preco4Horas\nAté as 18h = R$ $precoAte18"
+                    val priceOptions = listOf(
+                        "30min = R$ $preco30Min",
+                        "1h = R$ $preco1Hora",
+                        "2h = R$ $preco2Horas",
+                        "4h = R$ $preco4Horas",
+                        "Até as 18h = R$ $precoAte18"
+                    )
 
                     textViewLocationName.text = nomeLocal
                     textViewLocationAddress.text = enderecoLocal
-                    textViewLocationPrices.text = pricesText
-                } else {
-                    Toast.makeText(this, "Erro ao recuperar informações do local", Toast.LENGTH_SHORT).show()
+
+                    val precoAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, priceOptions)
+                    locationPricesSpinner.adapter = precoAdapter
                 }
             }
             .addOnFailureListener { exception ->
@@ -141,10 +139,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         alertDialog.show()
 
         buttonConfirm.setOnClickListener {
-            // Lógica para confirmar a compra
-            alertDialog.dismiss() // Fechar o popup após a confirmação
+            alertDialog.dismiss()
         }
     }
 }
-
-//NAO DEU FETCH CORRETAMENTE MAS O POPUP FUNCIONOU

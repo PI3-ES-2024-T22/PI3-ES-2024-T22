@@ -42,4 +42,6 @@
     <string name="pre_os_do_local">Preços do Local</string>
     <string name="confirmar_compra">Confirmar Compra</string>
     <string name="ver_pre_os">Ver Preços</string>
+    <string name="data_nascimento_hint">DD/MM/AA</string>
+
 </resources>
