@@ -46,7 +46,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pocolocoLocation, 14f))
 
         mMap.setOnMarkerClickListener { marker ->
-                buttonloc.visibility = Button.VISIBLE
+            buttonloc.visibility = Button.VISIBLE
             true
         }
 

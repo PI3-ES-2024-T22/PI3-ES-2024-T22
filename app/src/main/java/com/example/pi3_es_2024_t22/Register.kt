@@ -166,4 +166,11 @@ class Register : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(baseContext, message, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, Login::class.java)
+        startActivity(intent)
+        finish()
+    }
 }

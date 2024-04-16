@@ -82,7 +82,7 @@ class Login : AppCompatActivity() {
                             database = FirebaseDatabase.getInstance().getReference("Pessoas")
                             val userRef = database.child(userId)
 
-                            val intent = Intent(this@Login, MapsActivity::class.java)
+                            val intent = Intent(this@Login, MainActivity::class.java)
                             startActivity(intent)
                             finish()
                         }
