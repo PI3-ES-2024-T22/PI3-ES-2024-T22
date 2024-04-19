@@ -2,6 +2,8 @@ package com.example.pi3_es_2024_t22
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.InputType
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
@@ -32,12 +34,34 @@ class Register : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        editTextEmail = findViewById(R.id.email)
-        editTextPassword = findViewById(R.id.password)
+        editTextEmail = findViewById<TextInputEditText>(R.id.email).apply {
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        }
+        editTextPassword = findViewById<TextInputEditText>(R.id.password).apply {
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
         editTextNome = findViewById(R.id.Nome_Completo)
-        editTextNumero = findViewById(R.id.N_Celular)
-        editTextCPF = findViewById(R.id.CPF)
-        editTextDataNasc = findViewById(R.id.Data_Nascimento)
+        editTextNumero = findViewById<TextInputEditText>(R.id.N_Celular).apply {
+            inputType = InputType.TYPE_CLASS_PHONE
+        }
+        editTextCPF = findViewById<TextInputEditText>(R.id.CPF).apply {
+            inputType = InputType.TYPE_CLASS_NUMBER
+        }
+
+        editTextDataNasc = findViewById<TextInputEditText>(R.id.Data_Nascimento).apply {
+            inputType = InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE
+            filters = arrayOf(InputFilter.LengthFilter(8)) // Limita o campo a 8 caracteres
+            onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
+                if (hasFocus) {
+                    // Mostrar hint ao tocar no campo de texto
+                    (view as TextInputEditText).hint = getString(R.string.data_nascimento_hint)
+                } else {
+                    // Ocultar hint ao perder o foco
+                    (view as TextInputEditText).hint = null
+                }
+            }
+        }
+
         editTextPerfil = findViewById(R.id.Perfil_Usuario)
         buttonRegister = findViewById(R.id.btn_register)
         progressBar = findViewById(R.id.progressBar)
@@ -60,7 +84,7 @@ class Register : AppCompatActivity() {
             val numero: String = editTextNumero.text.toString()
             val cpf: String = editTextCPF.text.toString()
             val dataNascimento: String = editTextDataNasc.text.toString()
-            val perfil: String = editTextPerfil.text.toString()
+            val perfil: String = editTextPerfil.text.toString().toLowerCase() // Convertendo para minúsculo
             val cartao = "" // Defina o valor do cartão aqui
 
             if (TextUtils.isEmpty(nome) || !nome.matches("[a-zA-Z ]+".toRegex())) {
@@ -83,7 +107,7 @@ class Register : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (TextUtils.isEmpty(perfil) || (perfil != "Gerente" && perfil != "Cliente")) {
+            if (TextUtils.isEmpty(perfil) || (perfil != "gerente" && perfil != "cliente")) { // Verificação em minúsculas
                 showError("Digite uma das opções Gerente ou Cliente")
                 return@setOnClickListener
             }
@@ -141,5 +165,12 @@ class Register : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(baseContext, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, Login::class.java)
+        startActivity(intent)
+        finish()
     }
 }

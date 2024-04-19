@@ -2,12 +2,10 @@ package com.example.pi3_es_2024_t22
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-
 
 class MainActivity : AppCompatActivity() {
 

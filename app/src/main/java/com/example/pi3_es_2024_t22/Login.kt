@@ -3,6 +3,7 @@ package com.example.pi3_es_2024_t22
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -11,11 +12,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 
 class Login : AppCompatActivity() {
     private lateinit var editTextEmail: TextInputEditText
@@ -27,28 +25,20 @@ class Login : AppCompatActivity() {
     private lateinit var buttonForgotPassword: TextView
     private lateinit var database: DatabaseReference
 
-    public override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-
-//        if (currentUser != null) {
-//            val intent = Intent(this@Login, MainActivity::class.java)
-//            startActivity(intent)
-//            finish()
-//        }
-
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        editTextEmail = findViewById(R.id.email)
-        editTextPassword = findViewById(R.id.password)
+        editTextEmail = findViewById<TextInputEditText>(R.id.email).apply {
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        }
+        editTextPassword = findViewById<TextInputEditText>(R.id.password).apply {
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
         buttonLogin = findViewById(R.id.btn_login)
         progressBar = findViewById(R.id.progressBar)
         buttonRegister = findViewById(R.id.registerNow)
         buttonForgotPassword = findViewById(R.id.forgotPass)
-
         auth = FirebaseAuth.getInstance()
 
         buttonRegister.setOnClickListener {
@@ -83,54 +73,24 @@ class Login : AppCompatActivity() {
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
-                    database = FirebaseDatabase.getInstance().getReference("Pessoas")
-
                     progressBar.visibility = View.GONE
+
                     if (task.isSuccessful) {
                         val user = auth.currentUser
                         user?.let {
                             val userId = it.uid
+                            database = FirebaseDatabase.getInstance().getReference("Pessoas")
                             val userRef = database.child(userId)
 
-                            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    val perfil = snapshot.child("Perfil").getValue(String::class.java)
-
-                                    // Verifica o tipo de usuário e direciona para a tela correspondente
-                                    when (perfil) {
-                                        "Gerente" -> {
-                                            //val intent = Intent(this@Login, TelaGerente::class.java)
-                                            //startActivity(intent)
-
-                                        }
-                                        "Cliente" -> {
-                                            //val intent = Intent(this@Login, TelaCliente::class.java)
-                                            //startActivity(intent)
-
-                                        }
-                                        else -> {
-                                            Toast.makeText(
-                                                baseContext,
-                                                "Tipo de usuário inválido.",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                    Toast.makeText(
-                                        baseContext,
-                                        "Erro ao acessar o banco de dados.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            })
+                            val intent = Intent(this@Login, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
                         }
                     } else {
+                        Log.e("LoginActivity", "Falha no login", task.exception)
                         Toast.makeText(
-                            baseContext,
-                            "Login falhou.",
+                            this@Login,
+                            "Login falhou. Verifique suas credenciais e tente novamente.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

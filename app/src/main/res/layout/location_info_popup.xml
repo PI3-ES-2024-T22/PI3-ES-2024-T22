@@ -17,11 +17,10 @@
         android:layout_height="wrap_content"
         android:text="@string/endere_o_do_local" />
 
-    <TextView
-        android:id="@+id/locationPrices"
+    <Spinner
+        android:id="@+id/locationPricesSpinner"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pre_os_do_local" />
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/btnConfirm"
