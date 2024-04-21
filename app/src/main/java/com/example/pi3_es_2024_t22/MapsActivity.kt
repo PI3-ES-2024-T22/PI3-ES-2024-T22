@@ -120,6 +120,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             return
         }
         mMap.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    // Save user's current location
+                    userLocation = location
+
+                    // Focus on the user's current location
+                    val userLatLng = LatLng(location.latitude, location.longitude)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f)) // Zoom level 15
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Location", "Error getting last known location: ", exception)
+            }
+
         firestore.collection("locais").get()
             .addOnSuccessListener { result ->
                 for (document in result) {
@@ -155,6 +171,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
     }
+
 
 
     override fun onMarkerClick(marker: Marker): Boolean {
