@@ -10,19 +10,31 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/btnloc"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="10dp"
         tools:ignore="MissingConstraints" />
 
-    <Button
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="60dp"
+        android:id="@+id/openLockerDialogButton"
         android:visibility="gone"
-        android:id="@+id/btnloc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="@string/ver_pre_os" />
+        android:layout_height="60dp"
+        android:layout_alignBottom="@+id/map"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/baseline_info_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="60dp"
+        android:id="@+id/navigateButton"
+        android:visibility="gone"
+        android:layout_height="60dp"
+        android:layout_alignBottom="@+id/map"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
+        android:src="@drawable/baseline_near_me_24"
+        android:background="@color/white"/>
 
 </RelativeLayout>

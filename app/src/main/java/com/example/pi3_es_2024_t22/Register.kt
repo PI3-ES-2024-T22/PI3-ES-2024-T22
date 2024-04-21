@@ -61,8 +61,6 @@ class Register : AppCompatActivity() {
                 }
             }
         }
-
-        editTextPerfil = findViewById(R.id.Perfil_Usuario)
         buttonRegister = findViewById(R.id.btn_register)
         progressBar = findViewById(R.id.progressBar)
         textView = findViewById(R.id.loginNow)

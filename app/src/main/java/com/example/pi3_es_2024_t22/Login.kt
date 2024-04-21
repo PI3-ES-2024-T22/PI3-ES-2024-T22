@@ -24,6 +24,7 @@ class Login : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var buttonForgotPassword: TextView
     private lateinit var database: DatabaseReference
+    private lateinit var showLockersButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,7 @@ class Login : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         buttonRegister = findViewById(R.id.registerNow)
         buttonForgotPassword = findViewById(R.id.forgotPass)
+        showLockersButton = findViewById(R.id.showLockersButton)
         auth = FirebaseAuth.getInstance()
 
         buttonRegister.setOnClickListener {
@@ -49,6 +51,12 @@ class Login : AppCompatActivity() {
 
         buttonForgotPassword.setOnClickListener {
             val intent = Intent(this@Login, ForgotPassword::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        showLockersButton.setOnClickListener {
+            val intent = Intent(this@Login, MapsActivity::class.java)
             startActivity(intent)
             finish()
         }

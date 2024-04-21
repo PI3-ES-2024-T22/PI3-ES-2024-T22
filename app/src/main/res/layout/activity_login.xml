@@ -137,14 +137,10 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/showLockersButton"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/btn_rounded"
         android:text="@string/Mapa" />
-
-
-
-
-
 </LinearLayout>

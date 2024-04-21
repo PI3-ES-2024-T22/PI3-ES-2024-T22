@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/locationAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <RadioGroup
+        android:id="@+id/priceRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- RadioButton for 30 Minutes Price -->
+        <RadioButton
+            android:id="@+id/radioThirtyMinutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30 Minutos"/>
+
+        <!-- RadioButton for 1 Hour Price -->
+        <RadioButton
+            android:id="@+id/radioOneHour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Hora"/>
+
+        <!-- RadioButton for 2 Hours Price -->
+        <RadioButton
+            android:id="@+id/radioTwoHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 Horas"/>
+
+        <!-- RadioButton for 4 Hours Price -->
+        <RadioButton
+            android:id="@+id/radioFourHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4 Horas"/>
+
+        <!-- RadioButton for Now Until 18h Price -->
+        <RadioButton
+            android:id="@+id/radioNowUntilSix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Agora até as 18h"/>
+    </RadioGroup>
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alocar"/>
+
+    <ImageView
+        android:id="@+id/qrCodeImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"/>
+</LinearLayout>
