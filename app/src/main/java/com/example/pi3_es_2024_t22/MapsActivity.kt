@@ -27,6 +27,7 @@ import com.example.pi3_es_2024_t22.databinding.ActivityMapsBinding
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.zxing.BarcodeFormat
@@ -49,6 +50,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var userLocation: Location
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
+    private lateinit var auth: FirebaseAuth
+
+
+
     data class MarkerData(
         val latLng: GeoPoint = GeoPoint(0.0, 0.0),
         val nome: String = "",
@@ -62,6 +67,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         setContentView(binding.root)
 
         firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -152,8 +158,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        // Show button when marker is clicked
+        // Check if the user has a credit card associated with their profile
+        val userUid = auth.currentUser?.uid
+        if (userUid != null) {
+            firestore.collection("Pessoas").document(userUid).get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
+                        if (hasCreditCard !== "") {
+                            // Show button when marker is clicked
+                            lockerDialogButton.visibility = FloatingActionButton.VISIBLE
+                        } else {
+                            // Hide button when the user doesn't have a credit card
+                            lockerDialogButton.visibility = FloatingActionButton.GONE
+                        }
+                    } else {
+                        // Handle case when user document doesn't exist
+                        Log.e("UserDocument", "User document does not exist")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("Firestore", "Error getting user document: ", exception)
+                }
+        } else {
+            // Handle case when user is not logged in
+            Log.e("User", "User is not logged in")
+        }
+
         navigateButton.visibility = FloatingActionButton.VISIBLE
+
+        // Set selected marker and distance logic as before
         selectedMarker = marker
         selectedMarker?.let { marker ->
             val distance = userLocation.distanceTo(Location("Marker").apply {
@@ -168,6 +202,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 lockerDialogButton.visibility = FloatingActionButton.VISIBLE
             }
         }
+
         // Consume the event to prevent the default behavior (info window display)
         return true
     }
