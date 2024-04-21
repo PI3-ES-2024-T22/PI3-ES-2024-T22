@@ -25,15 +25,14 @@
     <string name="cadastrar_cartao">Cadastrar cartao</string>
     <string name="concluir">Concluir</string>
     <string name="concluir_cadastro">Concluir Cadastro</string>
-    <string name="nome_completo">Nome Completo</string>
-    <string name="numero_de_celular">Numero de celular</string>
-    <string name="cpf">CPF</string>
-    <string name="data_de_nascimento">Data de Nascimento</string>
-    <string name="cliente_ou_gerente">Cliente ou Gerente?</string>
+    <string name="nome_completo"><font color="#FFFFFF">Nome Completo</font></string>
+    <string name="numero_de_celular"><font color="#FFFFFF">Numero de celular</font></string>
+    <string name="cpf"><font color="#FFFFFF">CPF</font></string>
+    <string name="data_de_nascimento"><font color="#FFFFFF">Data de Nascimento</font></string>
 
     <string name="senha">Senha</string>
     <string name="registrar_se"><font color="#FFFFFF">Informações Pessoais</font></string>
-    <string name="toque_para_realizar_o_login"><font color="#FFFFFF">Já tem uma conta?</font><font color="#34BAAB">Fazar login</font></string>
+    <string name="toque_para_realizar_o_login"><font color="#FFFFFF">Já tem uma conta?</font><font color="#34BAAB">Fazer login</font></string>
     <string name="criar_conta"><font color="#FFFFFF">Criar Conta</font></string>
 
 

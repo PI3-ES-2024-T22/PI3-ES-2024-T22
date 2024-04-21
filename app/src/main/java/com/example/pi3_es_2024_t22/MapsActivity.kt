@@ -49,9 +49,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var userLocation: Location
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
-// Request last known location
-
-
     data class MarkerData(
         val latLng: GeoPoint = GeoPoint(0.0, 0.0),
         val nome: String = "",
@@ -263,5 +260,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val matrix = MultiFormatWriter().encode(String(byteArray, charset), BarcodeFormat.QR_CODE, 300, 300, hints)
         val barcodeEncoder = BarcodeEncoder()
         return barcodeEncoder.createBitmap(matrix)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

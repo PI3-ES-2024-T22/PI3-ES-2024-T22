@@ -85,14 +85,23 @@ class Login : AppCompatActivity() {
 
                     if (task.isSuccessful) {
                         val user = auth.currentUser
-                        user?.let {
-                            val userId = it.uid
-                            database = FirebaseDatabase.getInstance().getReference("Pessoas")
-                            val userRef = database.child(userId)
 
-                            val intent = Intent(this@Login, MainActivity::class.java)
-                            startActivity(intent)
-                            finish()
+                        if (auth.currentUser?.isEmailVerified == true) {
+                            user?.let {
+                                val userId = it.uid
+                                database = FirebaseDatabase.getInstance().getReference("Pessoas")
+                                val userRef = database.child(userId)
+
+                                val intent = Intent(this@Login, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+                        } else {
+                            Toast.makeText(
+                                this@Login,
+                                "Verifique seu email para confirmar o login",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         Log.e("LoginActivity", "Falha no login", task.exception)

@@ -82,7 +82,7 @@ class Register : AppCompatActivity() {
             val numero: String = editTextNumero.text.toString()
             val cpf: String = editTextCPF.text.toString()
             val dataNascimento: String = editTextDataNasc.text.toString()
-            val perfil: String = editTextPerfil.text.toString().toLowerCase() // Convertendo para minúsculo
+            val perfil = "cliente"
             val cartao = "" // Defina o valor do cartão aqui
 
             if (TextUtils.isEmpty(nome) || !nome.matches("[a-zA-Z ]+".toRegex())) {
@@ -105,11 +105,6 @@ class Register : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (TextUtils.isEmpty(perfil) || (perfil != "gerente" && perfil != "cliente")) { // Verificação em minúsculas
-                showError("Digite uma das opções Gerente ou Cliente")
-                return@setOnClickListener
-            }
-
             if (TextUtils.isEmpty(email)) {
                 showError("Digite o email")
                 return@setOnClickListener
@@ -125,6 +120,16 @@ class Register : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                     if (task.isSuccessful) {
                         val user = auth.currentUser
+
+                        auth.currentUser?.sendEmailVerification()?.addOnCompleteListener(this) { task ->
+                            if (task.isSuccessful) {
+                                showToast("Email de verificação enviado.")
+                            } else {
+                                showToast("Falha ao enviar email de verificação.")
+                            }
+                        }
+
+
                         user?.let {
                             val userId = it.uid
 
@@ -141,7 +146,7 @@ class Register : AppCompatActivity() {
                                 .set(userMap)
                                 .addOnSuccessListener {
                                     showToast("Autenticação realizada com sucesso.")
-                                    startActivity(Intent(this@Register, MainActivity::class.java))
+                                    startActivity(Intent(this@Register, Login::class.java))
                                     finish()
                                 }
                                 .addOnFailureListener { e ->

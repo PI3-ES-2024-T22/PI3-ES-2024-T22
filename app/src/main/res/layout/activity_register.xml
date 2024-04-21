@@ -33,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:paddingLeft="10dp"
+            android:textColor="@color/white"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -47,7 +48,9 @@
             android:background="@drawable/style_input"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:paddingLeft="10dp"/>
+            android:paddingLeft="10dp"
+            android:textColor="@color/white"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,7 +64,9 @@
             android:background="@drawable/style_input"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:paddingLeft="10dp"/>
+            android:paddingLeft="10dp"
+            android:textColor="@color/white"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,52 +76,19 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/Data_Nascimento"
-            android:layout_width="184dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/style_input"
             android:hint="@string/data_de_nascimento"
-            android:paddingLeft="10dp" />
+            android:paddingLeft="10dp"
+            android:textColor="@color/white"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/radioButton1"
-            android:layout_width="183dp"
-            android:layout_height="wrap_content"
-            android:buttonTint="#FFFFFF"
-            android:text="Cliente"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <RadioButton
-            android:id="@+id/radioButton2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:buttonTint="#FFFFFF"
-            android:text="Gerente"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-    </RadioGroup>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:text="@string/criar_conta"
-        android:textSize="25sp"
-        android:textStyle="bold"
-
-        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -128,7 +100,9 @@
             android:background="@drawable/style_input"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:paddingLeft="10dp"/>
+            android:paddingLeft="10dp"
+            android:textColor="@color/white"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,11 +112,13 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
-            android:hint="@string/senha"
+            android:hint="@string/password"
             android:background="@drawable/style_input"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:paddingLeft="10dp"/>
+            android:paddingLeft="10dp"
+            android:textColor="@color/white"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
