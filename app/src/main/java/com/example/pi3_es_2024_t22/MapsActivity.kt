@@ -85,9 +85,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
-                // Got last known location. In some rare situations this can be null.
+                // Pegar a ultima localizacao do usuario
                 if (location != null) {
-                    // Save user's current location
                     userLocation = location
                 }
             }
@@ -122,14 +121,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.isMyLocationEnabled = true
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
-                // Got last known location. In some rare situations this can be null.
+
                 if (location != null) {
-                    // Save user's current location
                     userLocation = location
 
-                    // Focus on the user's current location
+                    // Colocando o foco do mapa na localizacao atual do usuario
                     val userLatLng = LatLng(location.latitude, location.longitude)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f)) // Zoom level 15
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
                 }
             }
             .addOnFailureListener { exception ->
@@ -142,7 +140,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     val markerData = document.toObject(MarkerData::class.java)
                     val position = LatLng(markerData.latLng.latitude, markerData.latLng.longitude)
                     val marker = mMap.addMarker(MarkerOptions().position(position).title(markerData.nome))
-                    marker?.tag = markerData.info // Store the info map in the marker tag
+                    marker?.tag = markerData.info // Salvando as informacoes do armario no marker
                 }
             }
             .addOnFailureListener { exception ->
@@ -156,7 +154,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         lockerDialogButton = findViewById(R.id.openLockerDialogButton)
         navigateButton.setOnClickListener {
             selectedMarker?.let { marker ->
-                // Start navigation to the clicked marker
+                // Abrir o google maps para navegacao
                 val uri = "google.navigation:q=${marker.position.latitude},${marker.position.longitude}"
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
                 intent.setPackage("com.google.android.apps.maps")
@@ -165,7 +163,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         lockerDialogButton.setOnClickListener {
             selectedMarker?.let { marker ->
-                // Display dialog with marker nome and info
                 val info = marker.tag as? Map<String, String> ?: mapOf() // Retrieve info from marker tag
                 showMarkerInfoDialog(marker.title ?: "Sem nome", info)
             }
@@ -175,36 +172,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        // Check if the user has a credit card associated with their profile
-        val userUid = auth.currentUser?.uid
-        if (userUid != null) {
-            firestore.collection("Pessoas").document(userUid).get()
-                .addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
-                        if (hasCreditCard !== "") {
-                            // Show button when marker is clicked
-                            lockerDialogButton.visibility = FloatingActionButton.VISIBLE
-                        } else {
-                            // Hide button when the user doesn't have a credit card
-                            lockerDialogButton.visibility = FloatingActionButton.GONE
-                        }
-                    } else {
-                        // Handle case when user document doesn't exist
-                        Log.e("UserDocument", "User document does not exist")
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.e("Firestore", "Error getting user document: ", exception)
-                }
-        } else {
-            // Handle case when user is not logged in
-            Log.e("User", "User is not logged in")
-        }
+        // Checcar se o usuario possui um cartao cadastrado
+
 
         navigateButton.visibility = FloatingActionButton.VISIBLE
 
-        // Set selected marker and distance logic as before
         selectedMarker = marker
         selectedMarker?.let { marker ->
             val distance = userLocation.distanceTo(Location("Marker").apply {
@@ -212,20 +184,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 longitude = marker.position.longitude
             })
 
-            // Show or hide the lockerDialogButton based on distance
-            if (distance >= 1000) { // 1000 meters = 1 km
-                lockerDialogButton.visibility = FloatingActionButton.GONE
+            // Verificando distancia do usuario em relacao ao armario
+            val userUid = auth.currentUser?.uid
+            if (userUid != null) {
+                firestore.collection("Pessoas").document(userUid).get()
+                    .addOnSuccessListener { documentSnapshot ->
+                        if (documentSnapshot.exists()) {
+                            val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
+                            if (hasCreditCard !== "" && distance <= 1000) {
+                                // Mostrar botao para alugar armario caso o usuario tenha um cartao cadastrado
+                                lockerDialogButton.visibility = FloatingActionButton.VISIBLE
+                            } else {
+                                // Esconder botao para alugar armario caso o usuario nao tenha um cartao cadastrado
+                                lockerDialogButton.visibility = FloatingActionButton.GONE
+                            }
+                        } else {
+                            Log.e("UserDocument", "User document does not exist")
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("Firestore", "Error getting user document: ", exception)
+                    }
             } else {
-                lockerDialogButton.visibility = FloatingActionButton.VISIBLE
+                Log.e("User", "User is not logged in")
             }
         }
 
-        // Consume the event to prevent the default behavior (info window display)
+
+
         return true
     }
 
     override fun onMapClick(p0: LatLng) {
-        // Hide button when clicking off a marker
         navigateButton.visibility = FloatingActionButton.GONE
         lockerDialogButton.visibility = FloatingActionButton.GONE
         selectedMarker = null
@@ -235,11 +225,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val dialogView = layoutInflater.inflate(R.layout.location_info_dialog, null)
 
 
-        // Initialize TextViews for dialog title and address
         val dialogTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
         val locationAddress = dialogView.findViewById<TextView>(R.id.locationAddress)
 
-        // Initialize RadioGroup and RadioButtons for price options
         val priceRadioGroup = dialogView.findViewById<RadioGroup>(R.id.priceRadioGroup)
         val radioThirtyMinutes = dialogView.findViewById<RadioButton>(R.id.radioThirtyMinutes)
         val radioOneHour = dialogView.findViewById<RadioButton>(R.id.radioOneHour)
@@ -247,11 +235,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val radioFourHours = dialogView.findViewById<RadioButton>(R.id.radioFourHours)
         val radioNowUntilSix = dialogView.findViewById<RadioButton>(R.id.radioNowUntilSix)
 
-        // Set dialog title and address
         dialogTitle.text = "Armário - ${info["referencePoint"]}"
         locationAddress.text = "Endereço - ${info["address"]}"
 
-        // Set price options text
         radioThirtyMinutes.text = "30 Minutos: R$ ${info["thirtyMinutesPrice"]}"
         radioOneHour.text = "1 Hora: R$ ${info["oneHourPrice"]}"
         radioTwoHours.text = "2 Horas: R$ ${info["twoHoursPrice"]}"
@@ -261,9 +247,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val submitButton = dialogView.findViewById<Button>(R.id.submitButton)
         val qrCodeImageView = dialogView.findViewById<ImageView>(R.id.qrCodeImageView)
 
-        // Set click listener for the Submit Button
         submitButton.setOnClickListener {
-            // Get the selected price option
+            // Pegar a opcao de preco selecionada
             val selectedPrice = when (priceRadioGroup.checkedRadioButtonId) {
                 R.id.radioThirtyMinutes -> info["thirtyMinutesPrice"]
                 R.id.radioOneHour -> info["oneHourPrice"]
@@ -273,13 +258,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 else -> null
             }
 
-            // Generate QR code based on the selected price
+            // Geracao do qr code
             if (selectedPrice != null) {
                 val qrCodeBitmap = generateQRCode(selectedPrice)
                 qrCodeImageView.setImageBitmap(qrCodeBitmap)
                 qrCodeImageView.visibility = View.VISIBLE
 
-                // Hide the RadioGroup and Submit Button
                 priceRadioGroup.visibility = View.GONE
                 submitButton.visibility = View.GONE
 
@@ -288,12 +272,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 params.height = 800
                 qrCodeImageView.layoutParams = params
             } else {
-                // Handle case when no price is selected
                 Log.e("SelectedPrice", "No price selected")
             }
         }
 
-        // Initialize AlertDialog.Builder
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
         builder.setPositiveButton("OK") { dialog, which ->
@@ -303,11 +285,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun generateQRCode(price: String): Bitmap {
-        // Convert the price to a byte array
         val charset = Charsets.UTF_8
         val byteArray = price.toByteArray(charset)
 
-        // Generate QR code from the byte array
         val hints = mapOf<EncodeHintType, ErrorCorrectionLevel>(Pair(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H))
         val matrix = MultiFormatWriter().encode(String(byteArray, charset), BarcodeFormat.QR_CODE, 300, 300, hints)
         val barcodeEncoder = BarcodeEncoder()
@@ -316,8 +296,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onBackPressed() {
         super.onBackPressed()
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        startActivity(intent)
+
+        if (auth.currentUser == null) {
+            val intent = Intent(applicationContext, Login::class.java)
+            startActivity(intent)
+        } else {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+        }
         finish()
     }
 }
