@@ -59,11 +59,19 @@
 
         <!-- RadioButton for Now Until 18h Price -->
         <RadioButton
+            android:visibility="visible"
             android:id="@+id/radioNowUntilSix"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Agora até as 18h"/>
     </RadioGroup>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ao alocar um armário, será cobrada a caução de uma diária e, estornada proporcionalmente
+de acordo com o período utilizado."
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <Button
         android:id="@+id/submitButton"
         android:layout_width="wrap_content"

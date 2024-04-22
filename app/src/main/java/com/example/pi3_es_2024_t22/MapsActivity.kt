@@ -45,6 +45,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var binding: ActivityMapsBinding
     private lateinit var navigateButton: FloatingActionButton
     private lateinit var lockerDialogButton: FloatingActionButton
+    private lateinit var infoOnlyButton: FloatingActionButton
     private var selectedMarker: Marker? = null
     private lateinit var firestore: FirebaseFirestore
     private lateinit var userLocation: Location
@@ -152,6 +153,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Initialize button
         navigateButton = findViewById(R.id.navigateButton)
         lockerDialogButton = findViewById(R.id.openLockerDialogButton)
+        infoOnlyButton = findViewById(R.id.openInfoOnlyDialogButton)
         navigateButton.setOnClickListener {
             selectedMarker?.let { marker ->
                 // Abrir o google maps para navegacao
@@ -163,8 +165,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         lockerDialogButton.setOnClickListener {
             selectedMarker?.let { marker ->
-                val info = marker.tag as? Map<String, String> ?: mapOf() // Retrieve info from marker tag
+                val info = marker.tag as? Map<String, String> ?: mapOf()
                 showMarkerInfoDialog(marker.title ?: "Sem nome", info)
+            }
+        }
+        infoOnlyButton.setOnClickListener {
+            selectedMarker?.let { marker ->
+                val info = marker.tag as? Map<String, String> ?: mapOf()
+                showInfoOnlyDialog(info)
             }
         }
     }
@@ -194,9 +202,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             if (hasCreditCard !== "" && distance <= 1000) {
                                 // Mostrar botao para alugar armario caso o usuario tenha um cartao cadastrado
                                 lockerDialogButton.visibility = FloatingActionButton.VISIBLE
+                                infoOnlyButton.visibility = FloatingActionButton.GONE
                             } else {
                                 // Esconder botao para alugar armario caso o usuario nao tenha um cartao cadastrado
                                 lockerDialogButton.visibility = FloatingActionButton.GONE
+                                infoOnlyButton.visibility = FloatingActionButton.VISIBLE
                             }
                         } else {
                             Log.e("UserDocument", "User document does not exist")
@@ -206,6 +216,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         Log.e("Firestore", "Error getting user document: ", exception)
                     }
             } else {
+                infoOnlyButton.visibility = FloatingActionButton.VISIBLE
                 Log.e("User", "User is not logged in")
             }
         }
@@ -218,6 +229,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMapClick(p0: LatLng) {
         navigateButton.visibility = FloatingActionButton.GONE
         lockerDialogButton.visibility = FloatingActionButton.GONE
+        infoOnlyButton.visibility = FloatingActionButton.GONE
         selectedMarker = null
     }
 
@@ -292,6 +304,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val matrix = MultiFormatWriter().encode(String(byteArray, charset), BarcodeFormat.QR_CODE, 300, 300, hints)
         val barcodeEncoder = BarcodeEncoder()
         return barcodeEncoder.createBitmap(matrix)
+    }
+
+    private fun showInfoOnlyDialog(info: Map<String, String>) {
+        val dialogView = layoutInflater.inflate(R.layout.info_only_dialog, null)
+        val dialogTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
+        val dialogAddress = dialogView.findViewById<TextView>(R.id.locationAddress)
+
+        dialogTitle.text = "Ponto de referencia - ${info["referencePoint"]}"
+        dialogAddress.text = "Endereço - ${info["address"]}"
+
+        val builder = AlertDialog.Builder(this)
+        builder.setView(dialogView)
+        builder.setPositiveButton("OK") { dialog, which ->
+            dialog.dismiss()
+        }
+        builder.show()
     }
 
     override fun onBackPressed() {
