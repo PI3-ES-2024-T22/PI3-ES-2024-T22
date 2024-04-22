@@ -1,23 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/degrade"
     tools:context=".MainActivity">
 
-    <com.braintreepayments.cardform.view.CardForm
-        android:id="@+id/cardForm"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/btn_rounded">
+
+        <com.braintreepayments.cardform.view.CardForm
+            android:id="@+id/cardForm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textStyle="bold"/>
+    </FrameLayout>
 
     <Button
         android:id="@+id/btn_concluir"
-        android:layout_width="match_parent"
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        android:layout_margin="12dp"
+        android:background="@drawable/btn_rounded"
         android:text="@string/concluir_cadastro"
-        android:layout_margin="12dp" />
-
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

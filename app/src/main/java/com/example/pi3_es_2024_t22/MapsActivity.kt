@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -38,6 +39,7 @@ import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import java.util.Calendar
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
@@ -180,50 +182,53 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        // Checcar se o usuario possui um cartao cadastrado
 
+        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        if (currentHour >= 7 && currentHour < 18) {
 
-        navigateButton.visibility = FloatingActionButton.VISIBLE
+            navigateButton.visibility = FloatingActionButton.VISIBLE
 
-        selectedMarker = marker
-        selectedMarker?.let { marker ->
-            val distance = userLocation.distanceTo(Location("Marker").apply {
-                latitude = marker.position.latitude
-                longitude = marker.position.longitude
-            })
+            selectedMarker = marker
+            selectedMarker?.let { marker ->
+                val distance = userLocation.distanceTo(Location("Marker").apply {
+                    latitude = marker.position.latitude
+                    longitude = marker.position.longitude
+                })
 
-            // Verificando distancia do usuario em relacao ao armario
-            val userUid = auth.currentUser?.uid
-            if (userUid != null) {
-                firestore.collection("Pessoas").document(userUid).get()
-                    .addOnSuccessListener { documentSnapshot ->
-                        if (documentSnapshot.exists()) {
-                            val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
-                            if (hasCreditCard !== "" && distance <= 1000) {
-                                // Mostrar botao para alugar armario caso o usuario tenha um cartao cadastrado
-                                lockerDialogButton.visibility = FloatingActionButton.VISIBLE
-                                infoOnlyButton.visibility = FloatingActionButton.GONE
+                // Verificando distancia do usuario em relacao ao armario
+                val userUid = auth.currentUser?.uid
+                if (userUid != null) {
+                    firestore.collection("Pessoas").document(userUid).get()
+                        .addOnSuccessListener { documentSnapshot ->
+                            if (documentSnapshot.exists()) {
+                                val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
+                                if (hasCreditCard !== "" && distance <= 1000) {
+                                    // Mostrar botao para alugar armario caso o usuario tenha um cartao cadastrado
+                                    lockerDialogButton.visibility = FloatingActionButton.VISIBLE
+                                    infoOnlyButton.visibility = FloatingActionButton.GONE
+                                } else {
+                                    // Esconder botao para alugar armario caso o usuario nao tenha um cartao cadastrado
+                                    lockerDialogButton.visibility = FloatingActionButton.GONE
+                                    infoOnlyButton.visibility = FloatingActionButton.VISIBLE
+                                }
                             } else {
-                                // Esconder botao para alugar armario caso o usuario nao tenha um cartao cadastrado
-                                lockerDialogButton.visibility = FloatingActionButton.GONE
-                                infoOnlyButton.visibility = FloatingActionButton.VISIBLE
+                                Log.e("UserDocument", "User document does not exist")
                             }
-                        } else {
-                            Log.e("UserDocument", "User document does not exist")
                         }
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e("Firestore", "Error getting user document: ", exception)
-                    }
-            } else {
-                infoOnlyButton.visibility = FloatingActionButton.VISIBLE
-                Log.e("User", "User is not logged in")
+                        .addOnFailureListener { exception ->
+                            Log.e("Firestore", "Error getting user document: ", exception)
+                        }
+                } else {
+                    infoOnlyButton.visibility = FloatingActionButton.VISIBLE
+                    Log.e("User", "User is not logged in")
+                }
             }
+            return true
+
+        } else {
+            Toast.makeText(this, "Locação disponível apenas entre 7h e 18h", Toast.LENGTH_SHORT).show()
+            return false
         }
-
-
-
-        return true
     }
 
     override fun onMapClick(p0: LatLng) {

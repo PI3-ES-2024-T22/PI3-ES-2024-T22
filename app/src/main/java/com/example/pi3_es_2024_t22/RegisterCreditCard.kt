@@ -32,7 +32,6 @@ class RegisterCreditCard : AppCompatActivity() {
             .cvvRequired(true)
             .cardholderName(CardForm.FIELD_REQUIRED)
             .actionLabel("Concluir")
-            .mobileNumberRequired(true)
             .setup(this@RegisterCreditCard)
 
         cardForm.cvvEditText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
