@@ -47,7 +47,7 @@
     <string name="continuar_sem_cart_o_de_cr_dito">Continuar sem cartão de crédito</string>
     <string name="MAPS_API_KEY">AIzaSyBzgLroNVUivmkYw8nsOMSi2Y-1OYnDou8</string>
     <string name="title_activity_maps">MapsActivity</string>
-    <string name="view_lockers">Visualizar armarios</string>
+    <string name="view_lockers"><font color="#FFFFFF">Visualizar Armários</font></string>
     <string name="title_activity_maps2">MapsActivity2</string>
     <string name="alugar">Alugar</string>
     <string name="nome_do_local">Nome do Local</string>
