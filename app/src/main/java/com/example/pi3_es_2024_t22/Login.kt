@@ -27,8 +27,20 @@ class Login : AppCompatActivity() {
     private lateinit var showLockersButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        auth = FirebaseAuth.getInstance()
+
+
+        val user = auth.currentUser
+        if (user !== null) {
+            val intent = Intent(this@Login, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         editTextEmail = findViewById<TextInputEditText>(R.id.email).apply {
             inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
@@ -41,7 +53,6 @@ class Login : AppCompatActivity() {
         buttonRegister = findViewById(R.id.registerNow)
         buttonForgotPassword = findViewById(R.id.forgotPass)
         showLockersButton = findViewById(R.id.showLockersButton)
-        auth = FirebaseAuth.getInstance()
 
         buttonRegister.setOnClickListener {
             val intent = Intent(this@Login, Register::class.java)

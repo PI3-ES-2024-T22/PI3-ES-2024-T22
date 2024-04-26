@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pi3_es_2024_t22"
-        minSdk = 34
+        minSdk = 30
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
