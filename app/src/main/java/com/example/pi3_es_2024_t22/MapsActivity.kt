@@ -195,8 +195,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMarkerClick(marker: Marker): Boolean {
 
 
-       // if (currentHour >= 7 && currentHour < 18) {
-
             navigateButton.visibility = FloatingActionButton.VISIBLE
 
             selectedMarker = marker
@@ -240,10 +238,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
             return true
 
-      //  } else {
-      //      Toast.makeText(this, "Locação disponível apenas entre 7h e 18h", Toast.LENGTH_SHORT).show()
-      //      return false
-      //  }
     }
 
     override fun onMapClick(p0: LatLng) {

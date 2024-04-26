@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity() {
                 .addOnSuccessListener { documentSnapshot ->
                     val cartao = documentSnapshot.get("Cartao") as? Map<String, Any>
                     if (cartao != null && cartao.isNotEmpty()) {
-                        btn_cad_cartao.visibility = TextView.GONE
+                        btn_cad_cartao.isEnabled = false
+                        btn_cad_cartao.text = "Cartão já cadastrado!"
                     } else {
                         btn_cad_cartao.visibility = TextView.VISIBLE
                     }
@@ -61,9 +62,6 @@ class MainActivity : AppCompatActivity() {
                     if (!documents.isEmpty) {
                         showQRCodeAlert(documents.documents.first())
                     }
-                }
-                .addOnFailureListener { e ->
-                    // Handle failure
                 }
         }
 
@@ -83,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     private fun showQRCodeAlert(document: DocumentSnapshot) {
         val dialogView = layoutInflater.inflate(R.layout.qr_code_alert, null)
         val qrCodeImageView = dialogView.findViewById<ImageView>(R.id.qrCodeImageView)
-        val data = document.data.toString() // Convert document data to string (you may need to customize this)
+        val data = document.data.toString()
         val qrCodeBitmap = generateQRCode(data)
         qrCodeImageView.setImageBitmap(qrCodeBitmap)
 
@@ -100,11 +98,9 @@ class MainActivity : AppCompatActivity() {
         firestore.collection("locacoes").document(documentId)
             .delete()
             .addOnSuccessListener {
-                // Document successfully deleted
                 Log.i("Firebase", "Document deleted with ID: $documentId")
             }
             .addOnFailureListener { e ->
-                // Handle deletion failure
                 Log.w("Firebase", "Error deleting document: $e")
             }
     }
