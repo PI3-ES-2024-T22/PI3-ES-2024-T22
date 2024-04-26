@@ -17,13 +17,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class Register : AppCompatActivity() {
+    // Declaração das variáveis
     private lateinit var editTextEmail: TextInputEditText
     private lateinit var editTextPassword: TextInputEditText
     private lateinit var editTextNome: TextInputEditText
     private lateinit var editTextNumero: TextInputEditText
     private lateinit var editTextCPF: TextInputEditText
     private lateinit var editTextDataNasc: TextInputEditText
-    private lateinit var editTextPerfil: TextInputEditText
     private lateinit var buttonRegister: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var textView: TextView
@@ -34,6 +34,7 @@ class Register : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        // Inicialização das variáveis e configuração dos campos de entrada de texto
         editTextEmail = findViewById<TextInputEditText>(R.id.email).apply {
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
         }
@@ -47,7 +48,6 @@ class Register : AppCompatActivity() {
         editTextCPF = findViewById<TextInputEditText>(R.id.CPF).apply {
             inputType = InputType.TYPE_CLASS_NUMBER
         }
-
         editTextDataNasc = findViewById<TextInputEditText>(R.id.Data_Nascimento).apply {
             inputType = InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE
             filters = arrayOf(InputFilter.LengthFilter(8)) // Limita o campo a 8 caracteres
@@ -67,15 +67,18 @@ class Register : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
+        // Configuração do evento de clique para o texto de login
         textView.setOnClickListener {
             val intent = Intent(this@Register, Login::class.java)
             startActivity(intent)
             finish()
         }
 
+        // Configuração do evento de clique para o botão de registro
         buttonRegister.setOnClickListener {
             progressBar.visibility = View.VISIBLE
 
+            // Obtenção dos valores dos campos de entrada
             val email: String = editTextEmail.text.toString()
             val password: String = editTextPassword.text.toString()
             val nome: String = editTextNome.text.toString()
@@ -85,6 +88,7 @@ class Register : AppCompatActivity() {
             val perfil = "cliente"
             val cartao = "" // Defina o valor do cartão aqui
 
+            // Validação dos campos de entrada
             if (TextUtils.isEmpty(nome) || !nome.matches("[a-zA-Z ]+".toRegex())) {
                 showError("Digite o nome completo")
                 return@setOnClickListener
@@ -115,12 +119,14 @@ class Register : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Criação do usuário no Firebase Authentication
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     progressBar.visibility = View.GONE
                     if (task.isSuccessful) {
                         val user = auth.currentUser
 
+                        // Envio de email de verificação
                         auth.currentUser?.sendEmailVerification()?.addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
                                 showToast("Email de verificação enviado.")
@@ -129,7 +135,7 @@ class Register : AppCompatActivity() {
                             }
                         }
 
-
+                        // Registro dos dados do usuário no Firestore
                         user?.let {
                             val userId = it.uid
 
@@ -161,15 +167,18 @@ class Register : AppCompatActivity() {
         }
     }
 
+    // Exibir uma mensagem de erro em um Toast
     private fun showError(message: String) {
         Toast.makeText(this@Register, message, Toast.LENGTH_SHORT).show()
         progressBar.visibility = View.GONE
     }
 
+    // Exibir uma mensagem em um Toast
     private fun showToast(message: String) {
         Toast.makeText(baseContext, message, Toast.LENGTH_SHORT).show()
     }
 
+    // Lidar com o comportamento do botão de voltar
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(applicationContext, Login::class.java)

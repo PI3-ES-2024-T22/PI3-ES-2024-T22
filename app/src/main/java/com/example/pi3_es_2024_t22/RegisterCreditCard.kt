@@ -12,7 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.Button
 
 class RegisterCreditCard : AppCompatActivity() {
-
+    // Declaração das variáveis
     private lateinit var cardForm: CardForm
     private lateinit var firestore: FirebaseFirestore
     private lateinit var btn_concluir: Button
@@ -20,13 +20,15 @@ class RegisterCreditCard : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge() // Ativa a funcionalidade de tela cheia com gestos de borda a borda
         setContentView(R.layout.activity_register_credit_card)
 
+        // Inicialização das variáveis
         cardForm = findViewById(R.id.cardForm)
         btn_concluir = findViewById(R.id.btn_concluir)
         firestore = FirebaseFirestore.getInstance()
 
+        // Configuração do formulário de cartão de crédito
         cardForm.cardRequired(true)
             .expirationRequired(true)
             .cvvRequired(true)
@@ -34,31 +36,37 @@ class RegisterCreditCard : AppCompatActivity() {
             .actionLabel("Concluir")
             .setup(this@RegisterCreditCard)
 
+        // Configuração do campo de CVV
         cardForm.cvvEditText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
 
+        // Configuração do evento de clique para o botão de conclusão
         btn_concluir.setOnClickListener {
-            if (cardForm.isValid) {
+            if (cardForm.isValid) { // Verifica se o formulário de cartão é válido
                 Toast.makeText(this@RegisterCreditCard, "Cartão válido", Toast.LENGTH_LONG).show()
 
                 val user = FirebaseAuth.getInstance().currentUser
                 user?.let {
                     val userID = it.uid
 
+                    // Define uma classe para representar os detalhes do cartão
                     data class Cartao(
                         val nomeCartao: String,
                         val numeroCartao: String,
                     )
 
+                    // Cria uma instância da classe Cartao com os detalhes do cartão fornecidos pelo formulário
                     val cartao = Cartao(
                         nomeCartao = cardForm.cardholderName,
                         numeroCartao = cardForm.cardNumber
                     )
 
+                    // Atualiza as informações do cartão no Firestore
                     firestore.collection("Pessoas").document(userID)
                         .update("Cartao", cartao)
                         .addOnSuccessListener {
                             Toast.makeText(this@RegisterCreditCard, "Informações do cartão salvas com sucesso", Toast.LENGTH_LONG).show()
 
+                            // Redireciona para a próxima atividade após salvar as informações do cartão
                             val intent = Intent(applicationContext, MapsActivity::class.java)
                             startActivity(intent)
                             finish()
@@ -74,6 +82,7 @@ class RegisterCreditCard : AppCompatActivity() {
         }
     }
 
+    // Lidar com o comportamento do botão de voltar
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(applicationContext, MainActivity::class.java)
