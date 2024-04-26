@@ -56,7 +56,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var auth: FirebaseAuth
 
 
-
+    // data class para representar os dados de um marcador (armario)
     data class MarkerData(
         val latLng: GeoPoint = GeoPoint(0.0, 0.0),
         val nome: String = "",
@@ -72,6 +72,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+
+        // checkar e pedir permissoes ao usuario para acessar a localizacao
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -101,6 +103,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        // checkar e pedir permissoes ao usuario para acessar a localizacao
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -121,6 +124,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             )
             return
         }
+        // habilitacao da localizacao do usuario apos requisicao pelas permissoes
         mMap.isMyLocationEnabled = true
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
@@ -134,25 +138,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 }
             }
             .addOnFailureListener { exception ->
+                // Logar erro caso nao seja possivel pegar a localizacao do usuario
                 Log.e("Location", "Error getting last known location: ", exception)
             }
 
+        // requisacao dos marcadores (armarios) do firestore e criacao dos marcadores no mapa
         firestore.collection("locais").get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     val markerData = document.toObject(MarkerData::class.java)
                     val position = LatLng(markerData.latLng.latitude, markerData.latLng.longitude)
                     val marker = mMap.addMarker(MarkerOptions().position(position).title(markerData.nome))
-                    marker?.tag = markerData.info // Salvando as informacoes do armario no marker
+                    val infoWithId = markerData.info.toMutableMap()
+                    infoWithId["id"] = document.id
+                    marker?.tag = infoWithId
                 }
             }
+            // Logar erro caso nao seja possivel pegar os marcadores do firestore
             .addOnFailureListener { exception ->
                 Log.e("Firestore", "Error getting documents: ", exception)
             }
         mMap.setOnMarkerClickListener(this)
         mMap.setOnMapClickListener(this)
 
-        // Initialize button
+        // inicializacao para os botoes de navegacao e de informacoes
         navigateButton = findViewById(R.id.navigateButton)
         lockerDialogButton = findViewById(R.id.openLockerDialogButton)
         infoOnlyButton = findViewById(R.id.openInfoOnlyDialogButton)
@@ -165,12 +174,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 startActivity(intent)
             }
         }
+        // ao clicar no botao de alugar armario, abrir dialogo com informacoes do armario
         lockerDialogButton.setOnClickListener {
             selectedMarker?.let { marker ->
                 val info = marker.tag as? Map<String, String> ?: mapOf()
                 showMarkerInfoDialog(marker.title ?: "Sem nome", info)
             }
         }
+        // ao clicar no botao de informacoes, abrir dialogo com informacoes do armario sem a opcao de alugar
         infoOnlyButton.setOnClickListener {
             selectedMarker?.let { marker ->
                 val info = marker.tag as? Map<String, String> ?: mapOf()
@@ -183,26 +194,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMarkerClick(marker: Marker): Boolean {
 
-        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        if (currentHour >= 7 && currentHour < 18) {
+
+       // if (currentHour >= 7 && currentHour < 18) {
 
             navigateButton.visibility = FloatingActionButton.VISIBLE
 
             selectedMarker = marker
+
+             // Verificando distancia do usuario em relacao ao armario
             selectedMarker?.let { marker ->
                 val distance = userLocation.distanceTo(Location("Marker").apply {
                     latitude = marker.position.latitude
                     longitude = marker.position.longitude
                 })
 
-                // Verificando distancia do usuario em relacao ao armario
                 val userUid = auth.currentUser?.uid
                 if (userUid != null) {
+                    // checando se o usuario atual possui cartao cadastrado
                     firestore.collection("Pessoas").document(userUid).get()
                         .addOnSuccessListener { documentSnapshot ->
                             if (documentSnapshot.exists()) {
                                 val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
-                                if (hasCreditCard !== "" && distance <= 1000) {
+                                if (hasCreditCard !== "" && distance <= 10000) {
                                     // Mostrar botao para alugar armario caso o usuario tenha um cartao cadastrado
                                     lockerDialogButton.visibility = FloatingActionButton.VISIBLE
                                     infoOnlyButton.visibility = FloatingActionButton.GONE
@@ -212,6 +225,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                                     infoOnlyButton.visibility = FloatingActionButton.VISIBLE
                                 }
                             } else {
+                                // Log de erro caso nao seja possivel pegar o documento do usuario
                                 Log.e("UserDocument", "User document does not exist")
                             }
                         }
@@ -219,16 +233,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             Log.e("Firestore", "Error getting user document: ", exception)
                         }
                 } else {
+                    // Esconder botao para alugar armario caso o usuario nao esteja logado
                     infoOnlyButton.visibility = FloatingActionButton.VISIBLE
                     Log.e("User", "User is not logged in")
                 }
             }
             return true
 
-        } else {
-            Toast.makeText(this, "Locação disponível apenas entre 7h e 18h", Toast.LENGTH_SHORT).show()
-            return false
-        }
+      //  } else {
+      //      Toast.makeText(this, "Locação disponível apenas entre 7h e 18h", Toast.LENGTH_SHORT).show()
+      //      return false
+      //  }
     }
 
     override fun onMapClick(p0: LatLng) {
@@ -240,7 +255,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private fun showMarkerInfoDialog(nome: String, info: Map<String, String>) {
         val dialogView = layoutInflater.inflate(R.layout.location_info_dialog, null)
-
 
         val dialogTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
         val locationAddress = dialogView.findViewById<TextView>(R.id.locationAddress)
@@ -261,8 +275,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         radioFourHours.text = "4 Horas: R$ ${info["fourHoursPrice"]}"
         radioNowUntilSix.text = "Agora até as 18h: R$ ${info["nowUntilSixPrice"]}"
 
+
+        // utilizando o horario atual do usuario para desabilitar o botao de alugar armario
+        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+
+        if (currentHour in 7..8) {
+            radioNowUntilSix.isEnabled = true
+        } else {
+            radioNowUntilSix.isEnabled = false
+        }
+
         val submitButton = dialogView.findViewById<Button>(R.id.submitButton)
         val qrCodeImageView = dialogView.findViewById<ImageView>(R.id.qrCodeImageView)
+        var createdDocumentId = ""
 
         submitButton.setOnClickListener {
             // Pegar a opcao de preco selecionada
@@ -275,9 +300,43 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 else -> null
             }
 
-            // Geracao do qr code
+            // Gerar o conteúdo do QR code baseado nos dados do documento
+            val documentContent = buildString {
+                append("Preço: $selectedPrice\n")
+                append("Nome do armário: ${info["referencePoint"]}\n")
+                append("Endereço: ${info["address"]}\n")
+                // Adicione outros campos do documento conforme necessário
+            }
+
+            // Gerar o QR code a partir do conteúdo do documento
             if (selectedPrice != null) {
-                val qrCodeBitmap = generateQRCode(selectedPrice)
+                // Criar documento na coleção "locacoes"
+                val locacoesRef = firestore.collection("locacoes")
+                val userUid = auth.currentUser?.uid
+                val markerId = info["id"]
+
+                if (userUid != null && markerId != null) {
+                    val locacaoData = hashMapOf(
+                        "usuarioId" to userUid,
+                        "localId" to markerId,
+                        "preco" to selectedPrice,
+                        "ativo" to false,
+                    )
+
+
+                    locacoesRef.add(locacaoData)
+                        .addOnSuccessListener { documentReference ->
+                            createdDocumentId = documentReference.id
+                            Log.d("Firestore", "Locacao document added with ID: ${documentReference.id}")
+
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firestore", "Error adding document", e)
+                        }
+                }
+
+                // Exibir o QR code e esconder os elementos de entrada de preço
+                val qrCodeBitmap = generateQRCode(documentContent)
                 qrCodeImageView.setImageBitmap(qrCodeBitmap)
                 qrCodeImageView.visibility = View.VISIBLE
 
@@ -293,12 +352,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
 
+
+
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
-        builder.setPositiveButton("OK") { dialog, which ->
+
+        builder.setNegativeButton("Cancelar") { dialog, which ->
+            val documentId = createdDocumentId
+            if (documentId != null) {
+                removeLocacaoDocument(documentId)
+            }
             dialog.dismiss()
         }
+
         builder.show()
+    }
+
+    private fun removeLocacaoDocument(documentId: String) {
+        firestore.collection("locacoes").document(documentId)
+            .delete()
+            .addOnSuccessListener {
+                // Document successfully deleted
+                Log.i("Firebase", "Document deleted with ID: $documentId")
+            }
+            .addOnFailureListener { e ->
+                // Handle deletion failure
+                Log.w("Firebase", "Error deleting document: $e")
+            }
     }
 
     private fun generateQRCode(price: String): Bitmap {
