@@ -69,6 +69,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // instancias do firestore e do firebase auth
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
@@ -103,7 +104,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        // checkar e pedir permissoes ao usuario para acessar a localizacao
+        // checar e pedir permissoes ao usuario para acessar a localizacao
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -158,6 +159,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             .addOnFailureListener { exception ->
                 Log.e("Firestore", "Error getting documents: ", exception)
             }
+
+        // ativando os listeners para os marcadores e para o mapa
         mMap.setOnMarkerClickListener(this)
         mMap.setOnMapClickListener(this)
 
@@ -191,12 +194,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 
-
+    // sobreescrita da funcao ao clicker em um marcador
     override fun onMarkerClick(marker: Marker): Boolean {
 
-
             navigateButton.visibility = FloatingActionButton.VISIBLE
-
             selectedMarker = marker
 
              // Verificando distancia do usuario em relacao ao armario
@@ -228,6 +229,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             }
                         }
                         .addOnFailureListener { exception ->
+                            // Log de erro
                             Log.e("Firestore", "Error getting user document: ", exception)
                         }
                 } else {
@@ -240,13 +242,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     }
 
+    // sobreescrita da funcao ao clickar no mapa
     override fun onMapClick(p0: LatLng) {
+        // esconder botoes ao clicar no mapa
         navigateButton.visibility = FloatingActionButton.GONE
         lockerDialogButton.visibility = FloatingActionButton.GONE
         infoOnlyButton.visibility = FloatingActionButton.GONE
         selectedMarker = null
     }
 
+    // funcao para mostrar o dialogo que contem informacoes e opcao de alugar armario
     private fun showMarkerInfoDialog(nome: String, info: Map<String, String>) {
         val dialogView = layoutInflater.inflate(R.layout.location_info_dialog, null)
 
@@ -259,6 +264,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val radioTwoHours = dialogView.findViewById<RadioButton>(R.id.radioTwoHours)
         val radioFourHours = dialogView.findViewById<RadioButton>(R.id.radioFourHours)
         val radioNowUntilSix = dialogView.findViewById<RadioButton>(R.id.radioNowUntilSix)
+
+        // definicao dos textos de acordo com os precos cadastrados no firebase
 
         dialogTitle.text = "Armário - ${info["referencePoint"]}"
         locationAddress.text = "Endereço - ${info["address"]}"
@@ -299,7 +306,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 append("Preço: $selectedPrice\n")
                 append("Nome do armário: ${info["referencePoint"]}\n")
                 append("Endereço: ${info["address"]}\n")
-                // Adicione outros campos do documento conforme necessário
             }
 
             // Gerar o QR code a partir do conteúdo do documento
@@ -321,10 +327,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     locacoesRef.add(locacaoData)
                         .addOnSuccessListener { documentReference ->
                             createdDocumentId = documentReference.id
+                            // Log de sucesso
                             Log.d("Firestore", "Locacao document added with ID: ${documentReference.id}")
 
                         }
                         .addOnFailureListener { e ->
+                            // Log de erro
                             Log.e("Firestore", "Error adding document", e)
                         }
                 }
@@ -347,7 +355,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
 
 
-
+        // builder responsavel por mostrar o dialogo com o qr code
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
 
@@ -362,29 +370,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         builder.show()
     }
 
+    // funcao para remover um documento da colecao "locacoes" no firestore caso o usuario cancele a locacao
     private fun removeLocacaoDocument(documentId: String) {
         firestore.collection("locacoes").document(documentId)
             .delete()
             .addOnSuccessListener {
-                // Document successfully deleted
+                // Log de sucesso
                 Log.i("Firebase", "Document deleted with ID: $documentId")
             }
             .addOnFailureListener { e ->
-                // Handle deletion failure
+                // Log de erro
                 Log.w("Firebase", "Error deleting document: $e")
             }
     }
 
+
+    // funcao de geracao do qr code
     private fun generateQRCode(price: String): Bitmap {
         val charset = Charsets.UTF_8
         val byteArray = price.toByteArray(charset)
 
+        // transformando o byte array em um qr code
         val hints = mapOf<EncodeHintType, ErrorCorrectionLevel>(Pair(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H))
         val matrix = MultiFormatWriter().encode(String(byteArray, charset), BarcodeFormat.QR_CODE, 300, 300, hints)
         val barcodeEncoder = BarcodeEncoder()
         return barcodeEncoder.createBitmap(matrix)
     }
 
+    // funcao para mostrar o dialogo que contem apenas informacoes basicas sobre o armario
     private fun showInfoOnlyDialog(info: Map<String, String>) {
         val dialogView = layoutInflater.inflate(R.layout.info_only_dialog, null)
         val dialogTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
@@ -401,6 +414,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         builder.show()
     }
 
+    // Sobrescrita da função onBackPressed para retornar à tela de login ao pressionar o botão de voltar
     override fun onBackPressed() {
         super.onBackPressed()
 
