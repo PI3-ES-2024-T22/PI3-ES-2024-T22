@@ -54,6 +54,7 @@ android {
 }
 
 dependencies {
+    implementation("com.github.santalu:maskara:1.0.0")
     implementation("com.journeyapps:zxing-android-embedded:4.2.0")
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("com.google.zxing:core:3.4.1")

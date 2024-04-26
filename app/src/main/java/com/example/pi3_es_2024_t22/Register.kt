@@ -145,7 +145,7 @@ class Register : AppCompatActivity() {
                             firestore.collection("Pessoas").document(userId)
                                 .set(userMap)
                                 .addOnSuccessListener {
-                                    showToast("Autenticação realizada com sucesso.")
+                                    auth.signOut()
                                     startActivity(Intent(this@Register, Login::class.java))
                                     finish()
                                 }
