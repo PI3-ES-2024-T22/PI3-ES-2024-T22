@@ -43,5 +43,6 @@
     <string name="confirmar_compra">Confirmar Compra</string>
     <string name="ver_pre_os">Ver Preços</string>
     <string name="data_nascimento_hint">DD/MM/AA</string>
+    <string name="scan_nfc_tag">Scan NFC Tag</string>
 
 </resources>
