@@ -18,7 +18,7 @@
     <string name="register"><font color="#FFFFFF">Register</font></string>
     <string name="click_to_login">Click to Login</string>
     <string name="click_to_register">Click to Register</string>
-    <string name="logout">logout</string>
+<string name="logout"><font color="#FFFFFF">Sair</font></string>
     <string name="cadastrar_cartao_de_credito">Cadastrar cartao de credito</string>
     <string name="title_activity_cadastrar_cartao">CadastrarCartao</string>
     <string name="cadastrar_cartao"><font color="#FFFFFF">Cadastrar cartao</font></string>
