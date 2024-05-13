@@ -21,9 +21,11 @@
     <string name="logout">logout</string>
     <string name="cadastrar_cartao_de_credito">Cadastrar cartao de credito</string>
     <string name="title_activity_cadastrar_cartao">CadastrarCartao</string>
-    <string name="cadastrar_cartao">Cadastrar cartao</string>
+    <string name="cadastrar_cartao"><font color="#FFFFFF">Cadastrar cartao</font></string>
     <string name="concluir">Concluir</string>
-    <string name="concluir_cadastro">Concluir Cadastro</string>
+
+    <string name="scan_nfc_tag"><font color="#FFFFFF">Scan NFC Tag</font></string>
+    <string name="concluir_cadastro"><font color="#FFFFFF">Concluir Cadastro</font></string>
     <string name="nome_completo"><font color="#FFFFFF">Nome Completo</font></string>
     <string name="numero_de_celular"><font color="#FFFFFF">Numero de celular</font></string>
     <string name="cpf"><font color="#FFFFFF">CPF</font></string>

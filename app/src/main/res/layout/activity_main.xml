@@ -54,7 +54,7 @@
         android:layout_marginStart="64dp"
         android:layout_marginTop="220dp"
         android:background="@drawable/btn_rounded"
-        android:text="Scan NFC Tag"
+        android:text="@string/scan_nfc_tag"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
