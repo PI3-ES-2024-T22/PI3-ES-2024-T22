@@ -3,22 +3,20 @@ package com.example.pi3_es_2024_t22
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import android.view.View
-import android.widget.ImageView
-import java.io.ByteArrayOutputStream
-
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class DiscoverTagActivity : AppCompatActivity() {
 
@@ -26,17 +24,17 @@ class DiscoverTagActivity : AppCompatActivity() {
     private lateinit var tagDataTextView: TextView
     private lateinit var writeButton: Button
     private lateinit var clientImage: ImageView
-    private lateinit var bitmap: Bitmap
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_discover_tag)
 
+        auth = FirebaseAuth.getInstance()
         tagDataTextView = findViewById(R.id.tagDataTextView)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         writeButton = findViewById(R.id.writeButton)
         clientImage = findViewById(R.id.tagData)
-
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -47,20 +45,23 @@ class DiscoverTagActivity : AppCompatActivity() {
             tag?.let {
                 Toast.makeText(this, "Tag detectada com sucesso", Toast.LENGTH_SHORT).show()
 
-//                tagDataTextView.visibility = View.GONE
                 writeButton.visibility = View.VISIBLE
                 clientImage.visibility = View.VISIBLE
-                tagDataTextView.text = "O usuario a alocar o armario:"
+                tagDataTextView.text = "O usuário a alocar o armário:"
+
+                try {
+                    val res = readTagData(tag)
+                    tagDataTextView.text = res
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Não foi possível ler os dados da tag.", Toast.LENGTH_SHORT).show()
+                }
 
                 writeButton.setOnClickListener {
                     try {
-                        val tagData = readImageFromTag(tag)
-                        clientImage.setImageBitmap(tagData)
+                        writeTagData(tag)
                     } catch (e: Exception) {
-                        Toast.makeText(this, "Não foi possível ler os dados da tag.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Não foi possível escrever os dados na tag.", Toast.LENGTH_SHORT).show()
                     }
-                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.imagem)
-                    writeImageToTag(tag, bitmap)
                 }
             }
         }
@@ -80,82 +81,45 @@ class DiscoverTagActivity : AppCompatActivity() {
         nfcAdapter?.disableForegroundDispatch(this)
     }
 
-//    private fun readTagData(tag: Tag): String {
-//        val ndef = Ndef.get(tag)
-//        ndef?.connect()
-//        val ndefMessage = ndef?.ndefMessage
-//        ndef?.close()
-//
-//        val payloadBytes = ndefMessage?.records?.firstOrNull()?.payload
-//        val payloadText = payloadBytes?.decodeToString() ?: "Nenhum dado encontrado"
-//
-//        return payloadText
-//    }
-
-
-
-//    private fun writeTagData(tag: Tag) {
-//        val ndef = Ndef.get(tag)
-//        ndef?.connect()
-//
-//        // Cria um novo NdefMessage com o novo status
-//        val newStatus = "FILIPE VAGAL CAIO VAGAL JAIME JIMMY VAGAL MEL VAGAL THIAGO MAIOR BAIANO" // Aqui você pode definir o novo status desejado
-//        val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, newStatus))
-//
-//        // Escreve a nova mensagem na tag NFC
-//        ndef?.writeNdefMessage(newNdefMessage)
-//
-//        ndef?.close()
-//    }
-
-    private fun readImageFromTag(tag: Tag): Bitmap? {
+    private fun readTagData(tag: Tag): String {
         val ndef = Ndef.get(tag)
         ndef?.connect()
         val ndefMessage = ndef?.ndefMessage
-        val payloadBytes = ndefMessage?.records?.firstOrNull()?.payload
         ndef?.close()
 
-        // Convertendo os bytes recebidos de volta para um bitmap
-        return payloadBytes?.let {
-            BitmapFactory.decodeByteArray(it, 0, it.size)
+        val payloadBytes = ndefMessage?.records?.firstOrNull()?.payload
+        val payloadText = payloadBytes?.decodeToString() ?: "Nenhum dado encontrado"
+
+        return payloadText
+    }
+
+    private fun writeTagData(tag: Tag) {
+        val currentUser = auth.currentUser
+        currentUser?.let {
+            // Recupere o nome do usuário do Firestore usando o UID do usuário
+            val db = FirebaseFirestore.getInstance()
+            db.collection("users").document(currentUser.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        val userName = document.getString("Nome Completo")
+                        val userData = "Usuário: $userName"
+                        val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, userData))
+
+                        val ndef = Ndef.get(tag)
+                        ndef?.connect()
+                        ndef?.writeNdefMessage(newNdefMessage)
+                        ndef?.close()
+
+                        Toast.makeText(this, "Informações do usuário ($userName) gravadas na tag NFC com sucesso.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Documento não encontrado.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Erro ao acessar o Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
         }
     }
-
-    private fun writeImageToTag(tag: Tag, bitmap: Bitmap) {
-        val ndef = Ndef.get(tag)
-        ndef?.connect()
-
-        // Convertendo a imagem em bytes para armazenamento na tag
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        val imageBytes = stream.toByteArray()
-        stream.close()
-
-        // Escrevendo os bytes da imagem na tag NFC
-        val imageRecord = NdefRecord.createMime("image/png", imageBytes)
-        val newNdefMessage = NdefMessage(imageRecord)
-        ndef?.writeNdefMessage(newNdefMessage)
-
-        ndef?.close()
-    }
-
-//    -----------------------------------------------------------------------------------
-
-//PARA MAIS DETALHES DOS DADOS DA TAG
-//    private fun readTagData(tag: Tag): String? {
-//        val ndef = Ndef.get(tag)
-//        ndef?.connect()
-//        val ndefMessage = ndef?.ndefMessage
-//        val stringBuilder = StringBuilder()
-//        ndefMessage?.records?.forEachIndexed { index, record ->
-//            stringBuilder.append("Record $index:\n")
-//            stringBuilder.append("TNF: ${record.tnf}\n")
-//            stringBuilder.append("Type: ${String(record.type)}\n")
-//            stringBuilder.append("Payload: ${String(record.payload)}\n")
-//        }
-//        ndef?.close()
-//        return stringBuilder.toString()
-//    }
-
 
 }

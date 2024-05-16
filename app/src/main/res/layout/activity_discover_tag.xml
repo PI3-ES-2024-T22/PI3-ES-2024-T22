@@ -32,6 +32,17 @@
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/tagClienteInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/black"
+        android:padding="16dp"/>
+
     <Button
         android:id="@+id/writeButton"
         android:layout_width="wrap_content"
