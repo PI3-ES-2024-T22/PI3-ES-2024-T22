@@ -63,6 +63,13 @@ class DiscoverTagActivity : AppCompatActivity() {
                 // }
 
                 writeButton.setOnClickListener {
+
+                    //APARECER UM BOTAO PROSSEGUIR 
+
+                    // DEPOIS MAIS DOIS BOTOES -> ENCERRAR LOCAÇÃO? 
+                    // SE SIM -> APROXIMAR TAG PARA APAGAR DADOS DA MEMÓRIA, ARMAZENAR NO BANCO DE DADOS  um pedido de estorno do caução, subtraindo o valor/tempo da locação.
+                    // SE NÃO -> o gerente escolhe a opção abrir momentaneamente e avisa o cliente para que acesse e FECHE manualmente o armário em seguida e a locação permanece ativa.
+
                     try {
                         writeTagData(tag)
                     } catch (e: Exception) {
