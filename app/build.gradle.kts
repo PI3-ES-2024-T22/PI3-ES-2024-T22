@@ -54,6 +54,8 @@ android {
 }
 
 dependencies {
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.github.santalu:maskara:1.0.0")
     implementation("com.journeyapps:zxing-android-embedded:4.2.0")
     implementation("com.google.android.gms:play-services-location:21.2.0")

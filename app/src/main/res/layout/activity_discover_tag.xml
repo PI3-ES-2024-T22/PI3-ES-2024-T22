@@ -8,39 +8,36 @@
 
     <TextView
         android:id="@+id/tagDataTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:text="Escaneie a Tag para iniciar a locacao"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@color/black"
+        android:textColor="@android:color/black"
         android:padding="16dp"/>
 
     <ImageView
         android:id="@+id/tagData"
-        android:layout_width="217dp"
-        android:layout_height="382dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:padding="16dp"
-        android:src="@drawable/imagem"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintTop_toBottomOf="@id/tagDataTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tagClienteInfo"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tagData"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@color/black"
+        android:textColor="@android:color/black"
         android:padding="16dp"/>
 
     <Button
@@ -48,11 +45,59 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Abrir Armario"
-        app:layout_constraintTop_toBottomOf="@id/tagDataTextView"
+        app:layout_constraintTop_toBottomOf="@id/tagClienteInfo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         android:padding="12dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/prosseguirButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prosseguir"
+        app:layout_constraintTop_toBottomOf="@id/writeButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/encerrarButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Encerrar Locação"
+        app:layout_constraintTop_toBottomOf="@id/prosseguirButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/abrirArmarioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Abrir Armário"
+        app:layout_constraintTop_toBottomOf="@id/encerrarButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/EncerrarTextoCliente"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/tagClienteInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@android:color/black"
+        android:padding="16dp"
         android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
