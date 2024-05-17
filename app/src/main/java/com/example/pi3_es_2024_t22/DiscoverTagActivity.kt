@@ -25,6 +25,7 @@ class DiscoverTagActivity : AppCompatActivity() {
     private lateinit var writeButton: Button
     private lateinit var clientImage: ImageView
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +50,17 @@ class DiscoverTagActivity : AppCompatActivity() {
                 clientImage.visibility = View.VISIBLE
                 tagDataTextView.text = "O usuário a alocar o armário:"
 
-                try {
-                    val res = readTagData(tag)
-                    tagDataTextView.text = res
-                } catch (e: Exception) {
-                    Toast.makeText(this, "Não foi possível ler os dados da tag.", Toast.LENGTH_SHORT).show()
-                }
+
+                // Mostrar na view as informações da locação pelo usuario ao escanear o QR code
+                //Firebse collection Locacao_feita 
+
+                //  Nao acho necessário
+                // try {
+                //     val res = readTagData(tag)
+                //     tagDataTextView.text = res
+                // } catch (e: Exception) {
+                //     Toast.makeText(this, "Não foi possível ler os dados da tag.", Toast.LENGTH_SHORT).show()
+                // }
 
                 writeButton.setOnClickListener {
                     try {
@@ -81,22 +87,24 @@ class DiscoverTagActivity : AppCompatActivity() {
         nfcAdapter?.disableForegroundDispatch(this)
     }
 
-    private fun readTagData(tag: Tag): String {
-        val ndef = Ndef.get(tag)
-        ndef?.connect()
-        val ndefMessage = ndef?.ndefMessage
-        ndef?.close()
 
-        val payloadBytes = ndefMessage?.records?.firstOrNull()?.payload
-        val payloadText = payloadBytes?.decodeToString() ?: "Nenhum dado encontrado"
+    //Acho q nao preisa ler, apenas escrever
+    // private fun readTagData(tag: Tag): String {
+    //     val ndef = Ndef.get(tag)
+    //     ndef?.connect()
+    //     val ndefMessage = ndef?.ndefMessage
+    //     ndef?.close()
 
-        return payloadText
-    }
+    //     val payloadBytes = ndefMessage?.records?.firstOrNull()?.payload
+    //     val payloadText = payloadBytes?.decodeToString() ?: "Nenhum dado encontrado"
+
+    //     return payloadText
+    // }
 
     private fun writeTagData(tag: Tag) {
         val currentUser = auth.currentUser
         currentUser?.let {
-            // Recupere o nome do usuário do Firestore usando o UID do usuário
+            // Escrever na tag a locação feita pelo usuario
             val db = FirebaseFirestore.getInstance()
             db.collection("users").document(currentUser.uid)
                 .get()
