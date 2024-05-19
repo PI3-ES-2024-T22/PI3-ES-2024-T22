@@ -10,10 +10,12 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 class Login : AppCompatActivity() {
     private lateinit var editTextEmail: TextInputEditText
@@ -25,6 +27,7 @@ class Login : AppCompatActivity() {
     private lateinit var buttonForgotPassword: TextView
     private lateinit var database: DatabaseReference
     private lateinit var showLockersButton: Button
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +35,11 @@ class Login : AppCompatActivity() {
 
         // Inicializando o FirebaseAuth
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         // Verifica se há um usuário logado, se sim, direciona para a MainActivity
         val user = auth.currentUser
-        if (user !== null) {
+        if (user != null) {
             val intent = Intent(this@Login, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -105,17 +109,39 @@ class Login : AppCompatActivity() {
                     if (task.isSuccessful) {
                         val user = auth.currentUser
 
+                        Log.d("LoginActivity", user.toString())
+
                         // Verifica se o e-mail do usuário foi verificado
                         if (auth.currentUser?.isEmailVerified == true) {
                             user?.let {
                                 val userId = it.uid
                                 database = FirebaseDatabase.getInstance().getReference("Pessoas")
-                                val userRef = database.child(userId)
 
-                                // Direciona para a MainActivity após o login bem-sucedido
-                                val intent = Intent(this@Login, MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
+                                firestore.collection("Pessoas").document(userId).get()
+                                    .addOnSuccessListener { documentSnapshot ->
+                                        if (documentSnapshot.exists()) {
+                                            val role = documentSnapshot.getString("Perfil")
+                                            if (role == "gerente") {
+                                                // Direciona para a ManagerMainActivity após o login bem-sucedido
+                                                val intent = Intent(this@Login, ManagerMainActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            } else {
+                                                // Direciona para a MainActivity após o login bem-sucedido
+                                                val intent = Intent(this@Login, MainActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                        } else {
+                                            // Log de erro caso nao seja possivel pegar o perfil do usuario
+                                            Log.e("UserDocument", "User document does not exist")
+                                            Toast.makeText(this@Login, "Erro ao obter perfil do usuário.", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        Log.e("Firestore", "Erro ao acessar o Firestore", exception)
+                                        Toast.makeText(this@Login, "Erro ao acessar o banco de dados.", Toast.LENGTH_SHORT).show()
+                                    }
                             }
                         } else {
                             // Mensagem para verificar o e-mail do usuário
