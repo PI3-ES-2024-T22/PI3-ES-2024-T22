@@ -31,6 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.gson.Gson
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -302,11 +303,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
 
             // Gerar o conteúdo do QR code baseado nos dados do documento
-            val documentContent = buildString {
-                append("Preço: $selectedPrice\n")
-                append("Nome do armário: ${info["referencePoint"]}\n")
-                append("Endereço: ${info["address"]}\n")
-            }
+            val documentContent = mapOf(
+                "selectedPrice" to selectedPrice,
+                "referencePoint" to info["referencePoint"],
+                "address" to info["address"],
+                "lockerId" to info["id"],
+                "userId" to auth.currentUser?.uid
+            )
 
             // Gerar o QR code a partir do conteúdo do documento
             if (selectedPrice != null) {
@@ -386,11 +389,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
     // funcao de geracao do qr code
-    private fun generateQRCode(price: String): Bitmap {
+    private fun generateQRCode(data: Map<String, String?>): Bitmap {
+        val gson = Gson()
+        val jsonString = gson.toJson(data)
         val charset = Charsets.UTF_8
-        val byteArray = price.toByteArray(charset)
+        val byteArray = jsonString.toByteArray(charset)
 
-        // transformando o byte array em um qr code
         val hints = mapOf<EncodeHintType, ErrorCorrectionLevel>(Pair(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H))
         val matrix = MultiFormatWriter().encode(String(byteArray, charset), BarcodeFormat.QR_CODE, 300, 300, hints)
         val barcodeEncoder = BarcodeEncoder()
