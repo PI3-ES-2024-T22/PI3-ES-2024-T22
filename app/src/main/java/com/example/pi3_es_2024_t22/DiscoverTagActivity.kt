@@ -35,7 +35,6 @@ class DiscoverTagActivity : AppCompatActivity() {
     private lateinit var encerrarButton: Button
     private lateinit var abrirArmarioButton: Button
     private lateinit var encerramentoTextView: TextView
-    private lateinit var scannedData: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +53,6 @@ class DiscoverTagActivity : AppCompatActivity() {
         abrirArmarioButton = findViewById(R.id.abrirArmarioButton)
         encerramentoTextView = findViewById(R.id.EncerrarTextoCliente)
 
-        scannedData = intent.getStringExtra("scannedData") ?: "" //Carrgea id do usuario q fez a locacao
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -68,10 +66,15 @@ class DiscoverTagActivity : AppCompatActivity() {
                 clientImage2.visibility = View.VISIBLE
                 tagDataTextView.text = "O usuário a alocar o armário:"
 
-                // Fetch data from the Firestore using the scanned QR code data
-                db.collection("locacao_pessoa").document(scannedData).get()
-                    .addOnSuccessListener { document ->
-                        if (document != null) {
+                db.collection("locacoes").get()
+                    .addOnSuccessListener { documents ->
+                        if (documents.isEmpty) {
+                            // Não há documentos, faça algo aqui
+                            Log.d("DiscoverTagActivity", "Não há documentos na coleção 'locacoes'")
+                            return@addOnSuccessListener
+                        }
+
+                        for (document in documents) {
                             val userName = document.getString("Nome Completo")
                             val local = document.getString("address") + ", " + document.getString("referencePoint")
                             val clientPhotoLink1 = document.getString("clientPhotoLink1")
@@ -97,38 +100,40 @@ class DiscoverTagActivity : AppCompatActivity() {
                                     Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
                                 }
                             }
-                        } else {
-                            Toast.makeText(this, "Usuário não realizou nenhuma locação.", Toast.LENGTH_SHORT).show()
-                        }
 
-                        prosseguirButton.setOnClickListener {
-                            encerrarButton.visibility = View.VISIBLE
-                            abrirArmarioButton.visibility = View.VISIBLE
-                            prosseguirButton.visibility = View.GONE
-                        }
-
-                        abrirArmarioButton.setOnClickListener {
-                            // Lógica para abrir armário
-                        }
-
-                        encerrarButton.setOnClickListener {
-                            try {
-                                eraseTagData(tag)
-                            } catch (e: Exception) {
-                                Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
+                            prosseguirButton.setOnClickListener {
+                                findViewById<Button>(R.id.encerrarButton).visibility = View.VISIBLE
+                                findViewById<Button>(R.id.abrirArmarioButton).visibility = View.VISIBLE
+                                prosseguirButton.visibility = View.GONE
                             }
 
-                            val tempoFimLocacao = Date()
-                            val tempoInicioLocacaoTimestamp = document.getTimestamp("tempoInicioLocacao")
-                            val tempoInicioLocacao = tempoInicioLocacaoTimestamp?.toDate()
+                            abrirArmarioButton.setOnClickListener {
 
-                            val caucao = calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
-                            val userMap = hashMapOf(
-                                "EstornoCaucao" to caucao
-                            )
+                            }
 
-                            db.collection("locacao_pessoa").document(scannedData).set(userMap)
+                            encerrarButton.setOnClickListener {
+                                try {
+                                    eraseTagData(tag)
+
+                                    val tempoFimLocacao = Date()
+
+                                    val tempoInicioLocacaoTimestamp = document.getTimestamp("tempoInicioLocacao")
+                                    val tempoInicioLocacao = tempoInicioLocacaoTimestamp?.toDate()
+
+                                    val caucao = calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
+                                    val userMap = hashMapOf<String, Any>(
+                                        "EstornoCaucao" to caucao
+                                    )
+                                    db.collection("locacoes").document(document.id).update(userMap)
+
+                                } catch (e: Exception) {
+                                    Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("DiscoverTagActivity", "Erro ao acessar o Firestore", exception)
                     }
             }
         }

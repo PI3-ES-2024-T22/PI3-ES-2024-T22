@@ -84,6 +84,10 @@ class ManagerMainActivity : AppCompatActivity() {
         btn_tag.setOnClickListener {
             val intent = Intent(this, DiscoverTagActivity::class.java)
             startActivity(intent)
+
+//            val intent = Intent(this, DiscoverTagActivity::class.java)
+//            intent.putExtra("scannedData", seuDadoExtra)
+//            startActivity(intent)
         }
     }
 
