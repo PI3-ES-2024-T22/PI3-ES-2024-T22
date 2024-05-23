@@ -58,49 +58,41 @@
         android:text="Tirar Foto"
         app:layout_constraintTop_toBottomOf="@id/btnConfirm"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
-
-    <ImageView
-        android:id="@+id/imageViewPhoto1"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="80dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnConfirm" />
 
     <Button
         android:id="@+id/btnTakePhoto2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tirar Foto"
-        app:layout_constraintTop_toBottomOf="@id/imageViewPhoto1"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnConfirm"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
     <ImageView
-        android:id="@+id/imageViewPhoto2"
-        android:layout_width="200dp"
+        android:id="@+id/imageViewPhoto1"
+        android:layout_width="0dp"
         android:layout_height="200dp"
-        android:layout_marginTop="80dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/imageViewPhoto1"
-        app:layout_constraintTop_toBottomOf="@+id/btnConfirm" />
-
-    <Button
-        android:id="@+id/finishRelease"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Finalizar"
-        app:layout_constraintTop_toBottomOf="@id/imageViewPhoto1"
+        app:layout_constraintTop_toBottomOf="@id/btnTakePhoto1"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/imageViewPhoto2"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
+        app:layout_constraintHorizontalChainStyle="packed"/>
+
+    <ImageView
+        android:id="@+id/imageViewPhoto2"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toBottomOf="@id/btnTakePhoto2"
+        app:layout_constraintStart_toEndOf="@id/imageViewPhoto1"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        app:layout_constraintHorizontalChainStyle="packed"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

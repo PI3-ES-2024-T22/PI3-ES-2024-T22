@@ -23,6 +23,7 @@ class ReleaseLocationActivity : AppCompatActivity() {
     private lateinit var textViewScannedData: TextView
     private lateinit var btnTakePhoto1: Button
     private lateinit var btnTakePhoto2: Button
+    private lateinit var finishRelease: Button
     private lateinit var imageViewPhoto1: ImageView
     private lateinit var imageViewPhoto2: ImageView
 
@@ -47,6 +48,7 @@ class ReleaseLocationActivity : AppCompatActivity() {
         val btnConfirm: Button = findViewById(R.id.btnConfirm)
         btnTakePhoto1 = findViewById(R.id.btnTakePhoto1)
         btnTakePhoto2 = findViewById(R.id.btnTakePhoto2)
+        // finishRelease = findViewById(R.id.finishRelease)
         imageViewPhoto1 = findViewById(R.id.imageViewPhoto1)
         imageViewPhoto2 = findViewById(R.id.imageViewPhoto2)
 
