@@ -57,6 +57,7 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     implementation("com.google.mlkit:barcode-scanning-common:17.0.0")
+    implementation("com.google.firebase:firebase-storage-ktx:19.1.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.google.mlkit:barcode-scanning:16.1.1")
     implementation("com.google.code.gson:gson:2.8.8")

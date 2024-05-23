@@ -93,4 +93,14 @@
         app:layout_constraintStart_toEndOf="@+id/imageViewPhoto1"
         app:layout_constraintTop_toBottomOf="@+id/btnConfirm" />
 
+    <Button
+        android:id="@+id/finishRelease"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finalizar"
+        app:layout_constraintTop_toBottomOf="@id/imageViewPhoto1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -302,16 +302,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 else -> null
             }
 
-            // Gerar o conteúdo do QR code baseado nos dados do documento
-            val documentContent = mapOf(
-                "selectedPrice" to selectedPrice,
-                "referencePoint" to info["referencePoint"],
-                "address" to info["address"],
-                "lockerId" to info["id"],
-                "userId" to auth.currentUser?.uid
-            )
-
-            // Gerar o QR code a partir do conteúdo do documento
             if (selectedPrice != null) {
                 // Criar documento na coleção "locacoes"
                 val locacoesRef = firestore.collection("locacoes")
@@ -326,32 +316,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         "ativo" to false,
                     )
 
-
                     locacoesRef.add(locacaoData)
                         .addOnSuccessListener { documentReference ->
                             createdDocumentId = documentReference.id
-                            // Log de sucesso
-                            Log.d("Firestore", "Locacao document added with ID: ${documentReference.id}")
 
+                            // Exibir o QR code e esconder os elementos de entrada de preço
+                            val documentContent = mapOf(
+                                "selectedPrice" to selectedPrice,
+                                "referencePoint" to info["referencePoint"],
+                                "address" to info["address"],
+                                "lockerId" to info["id"],
+                                "userId" to userUid,
+                                "locacaoId" to createdDocumentId
+                            )
+
+                            val qrCodeBitmap = generateQRCode(documentContent)
+                            qrCodeImageView.setImageBitmap(qrCodeBitmap)
+                            qrCodeImageView.visibility = View.VISIBLE
+
+                            priceRadioGroup.visibility = View.GONE
+                            submitButton.visibility = View.GONE
+
+                            val params = qrCodeImageView.layoutParams
+                            params.width = 800
+                            params.height = 800
+                            qrCodeImageView.layoutParams = params
                         }
                         .addOnFailureListener { e ->
                             // Log de erro
                             Log.e("Firestore", "Error adding document", e)
                         }
                 }
-
-                // Exibir o QR code e esconder os elementos de entrada de preço
-                val qrCodeBitmap = generateQRCode(documentContent)
-                qrCodeImageView.setImageBitmap(qrCodeBitmap)
-                qrCodeImageView.visibility = View.VISIBLE
-
-                priceRadioGroup.visibility = View.GONE
-                submitButton.visibility = View.GONE
-
-                val params = qrCodeImageView.layoutParams
-                params.width = 800
-                params.height = 800
-                qrCodeImageView.layoutParams = params
             } else {
                 Log.e("SelectedPrice", "No price selected")
             }

@@ -40,9 +40,32 @@ class Login : AppCompatActivity() {
         // Verifica se há um usuário logado, se sim, direciona para a MainActivity
         val user = auth.currentUser
         if (user != null) {
-            val intent = Intent(this@Login, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+
+            firestore.collection("Pessoas").document(user.uid).get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val role = documentSnapshot.getString("Perfil")
+                        if (role == "gerente") {
+                            // Direciona para a ManagerMainActivity após o login bem-sucedido
+                            val intent = Intent(this@Login, ManagerMainActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            // Direciona para a MainActivity após o login bem-sucedido
+                            val intent = Intent(this@Login, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                    } else {
+                        // Log de erro caso nao seja possivel pegar o perfil do usuario
+                        Log.e("UserDocument", "User document does not exist")
+                        Toast.makeText(this@Login, "Erro ao obter perfil do usuário.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("Firestore", "Erro ao acessar o Firestore", exception)
+                    Toast.makeText(this@Login, "Erro ao acessar o banco de dados.", Toast.LENGTH_SHORT).show()
+                }
         }
 
         // Inicializando as views

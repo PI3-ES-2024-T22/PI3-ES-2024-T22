@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -24,6 +25,9 @@ class ManagerMainActivity : AppCompatActivity() {
     private lateinit var txtScanned: TextView
     private lateinit var scannedLocation: String
     private lateinit var btn_tag: Button
+    private lateinit var buttonLogout: Button
+    private lateinit var auth: FirebaseAuth
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +42,19 @@ class ManagerMainActivity : AppCompatActivity() {
         btn_tag = findViewById(R.id.btn_tag)
         btnScanQR = findViewById(R.id.btnScanQR)
         txtScanned = findViewById(R.id.txtScanned)
+        buttonLogout = findViewById(R.id.btn_logout)
+        auth = FirebaseAuth.getInstance()
+
         val gmsScannerOptions = configureScannerOption()
         val instance = getBarcodeScannerInstance(gmsScannerOptions)
+
+        buttonLogout.setOnClickListener {
+            // Faz logout do usuário e redireciona para a tela de login
+            auth.signOut()
+            val intent = Intent(applicationContext, Login::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         btnScanQR.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
