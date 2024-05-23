@@ -13,10 +13,9 @@ import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AppCompatActivity
 
 class ReleaseLocationActivity : AppCompatActivity() {
 
@@ -25,6 +24,7 @@ class ReleaseLocationActivity : AppCompatActivity() {
     private lateinit var btnTakePhoto2: Button
     private lateinit var imageViewPhoto1: ImageView
     private lateinit var imageViewPhoto2: ImageView
+    private lateinit var btn_tag: Button
 
     private val CAMERA_PERMISSION_REQUEST_CODE = 1001
     private val CAMERA_REQUEST_CODE_1 = 1002
@@ -49,6 +49,7 @@ class ReleaseLocationActivity : AppCompatActivity() {
         btnTakePhoto2 = findViewById(R.id.btnTakePhoto2)
         imageViewPhoto1 = findViewById(R.id.imageViewPhoto1)
         imageViewPhoto2 = findViewById(R.id.imageViewPhoto2)
+        btn_tag = findViewById(R.id.btn_tag)
 
         btnConfirm.setOnClickListener {
             val selectedOptionId = radioGroup.checkedRadioButtonId
@@ -67,6 +68,12 @@ class ReleaseLocationActivity : AppCompatActivity() {
 
         btnTakePhoto2.setOnClickListener {
             checkCameraPermissionAndOpenCamera(CAMERA_REQUEST_CODE_2)
+        }
+
+        btn_tag.setOnClickListener {
+            val intent = Intent(this, DiscoverTagActivity::class.java)
+            intent.putExtra("scannedData", scannedData)
+            startActivity(intent)
         }
     }
 

@@ -21,26 +21,14 @@
         android:textColor="@color/white" />
 
     <Button
-        android:id="@+id/btn_tag"
-        android:layout_width="280dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_rounded"
-        android:text="@string/scan_nfc_tag"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/btnScanQR"
         android:layout_width="280dp"
-        android:layout_marginTop="20dp"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_rounded"
+        android:gravity="center"
         android:text="Liberar locação"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_tag" />
+        tools:layout_editor_absoluteX="65dp"
+        tools:layout_editor_absoluteY="499dp" />
 
     <TextView
         android:id="@+id/txtScanned"

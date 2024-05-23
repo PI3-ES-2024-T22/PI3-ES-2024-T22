@@ -24,10 +24,8 @@ class ManagerMainActivity : AppCompatActivity() {
     private lateinit var btnScanQR: Button
     private lateinit var txtScanned: TextView
     private lateinit var scannedLocation: String
-    private lateinit var btn_tag: Button
     private lateinit var buttonLogout: Button
     private lateinit var auth: FirebaseAuth
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +37,6 @@ class ManagerMainActivity : AppCompatActivity() {
             insets
         }
 
-        btn_tag = findViewById(R.id.btn_tag)
         btnScanQR = findViewById(R.id.btnScanQR)
         txtScanned = findViewById(R.id.txtScanned)
         buttonLogout = findViewById(R.id.btn_logout)
@@ -79,15 +76,6 @@ class ManagerMainActivity : AppCompatActivity() {
                     }
                 )
             }
-        }
-
-        btn_tag.setOnClickListener {
-            val intent = Intent(this, DiscoverTagActivity::class.java)
-            startActivity(intent)
-
-//            val intent = Intent(this, DiscoverTagActivity::class.java)
-//            intent.putExtra("scannedData", seuDadoExtra)
-//            startActivity(intent)
         }
     }
 
