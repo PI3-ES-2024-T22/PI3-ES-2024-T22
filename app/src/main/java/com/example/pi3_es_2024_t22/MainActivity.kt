@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonLogout: Button
     private lateinit var btn_cad_cartao: TextView
     private lateinit var btn_continue: Button
-    private lateinit var btn_tag: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         buttonLogout = findViewById(R.id.btn_logout)
         btn_cad_cartao = findViewById(R.id.btn_cad_cartao)
         btn_continue = findViewById(R.id.btn_prosseguir)
-        btn_tag = findViewById(R.id.btn_tag)
 
         // Configurando listener para o botão de logout
         buttonLogout.setOnClickListener {
@@ -90,14 +88,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-
-        btn_tag.setOnClickListener {
-            // Redireciona para a tela de mapa
-            val intent = Intent(applicationContext, DiscoverTagActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
     }
 
     // Função para exibir um alerta com o código QR

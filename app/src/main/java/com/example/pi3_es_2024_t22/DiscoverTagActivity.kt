@@ -26,7 +26,8 @@ class DiscoverTagActivity : AppCompatActivity() {
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var tagDataTextView: TextView
     private lateinit var writeButton: Button
-    private lateinit var clientImage: ImageView
+    private lateinit var clientImage1: ImageView
+    private lateinit var clientImage2: ImageView
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var clienteInfo: TextView
@@ -34,6 +35,7 @@ class DiscoverTagActivity : AppCompatActivity() {
     private lateinit var encerrarButton: Button
     private lateinit var abrirArmarioButton: Button
     private lateinit var encerramentoTextView: TextView
+    private lateinit var scannedData: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +46,15 @@ class DiscoverTagActivity : AppCompatActivity() {
         clienteInfo = findViewById(R.id.tagClienteInfo)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         writeButton = findViewById(R.id.writeButton)
-        clientImage = findViewById(R.id.tagData)
+        clientImage1 = findViewById(R.id.tagDataImage1)
+        clientImage2 = findViewById(R.id.tagDataImage2)
         db = FirebaseFirestore.getInstance()
         prosseguirButton = findViewById(R.id.prosseguirButton)
         encerrarButton = findViewById(R.id.encerrarButton)
         abrirArmarioButton = findViewById(R.id.abrirArmarioButton)
         encerramentoTextView = findViewById(R.id.EncerrarTextoCliente)
+
+        scannedData = intent.getStringExtra("scannedData") ?: "" //Carrgea id do usuario q fez a locacao
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -58,79 +63,73 @@ class DiscoverTagActivity : AppCompatActivity() {
         if (intent?.action == NfcAdapter.ACTION_TAG_DISCOVERED) {
             val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
             tag?.let {
-
                 writeButton.visibility = View.VISIBLE
-                clientImage.visibility = View.VISIBLE
+                clientImage1.visibility = View.VISIBLE
+                clientImage2.visibility = View.VISIBLE
                 tagDataTextView.text = "O usuário a alocar o armário:"
 
-                val currentUser = auth.currentUser
-                currentUser?.let { user ->
-                    db.collection("locacao_pessoa").document(user.uid).get()
-                        .addOnSuccessListener { document ->
-                            if (document != null) {
-                                val userName = document.getString("Nome Completo")
-                                val local = document.getString("address") + ", " + document.getString("referencePoint")
-                                val clientPhotoLink = document.getString("clientPhotoLink")
-                                //val tempoInicioLocacao = document.getDate("tempoInicioLocacao")
+                // Fetch data from the Firestore using the scanned QR code data
+                db.collection("locacao_pessoa").document(scannedData).get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            val userName = document.getString("Nome Completo")
+                            val local = document.getString("address") + ", " + document.getString("referencePoint")
+                            val clientPhotoLink1 = document.getString("clientPhotoLink1")
+                            val clientPhotoLink2 = document.getString("clientPhotoLink2")
 
-                                val userData = "Usuário: $userName\nLocal: $local"
-                                clienteInfo.text = userData
+                            val userData = "Usuário: $userName\nLocal: $local"
+                            clienteInfo.text = userData
+
+                            try {
+                                Glide.with(this).load(clientPhotoLink1).into(clientImage1)
+                                Glide.with(this).load(clientPhotoLink2).into(clientImage2)
+                            } catch (e: Exception) {
+                                Log.e("DiscoverTagActivity", "Erro ao carregar a imagem", e)
+                            }
+
+                            writeButton.setOnClickListener {
+                                writeButton.visibility = View.GONE
+                                prosseguirButton.visibility = View.VISIBLE
 
                                 try {
-                                    Glide.with(this).load(clientPhotoLink).into(clientImage)
-                                } catch (e: Exception) {
-                                    Log.e("DiscoverTagActivity", "Erro ao carregar a imagem", e)
-                                }
-
-                                writeButton.setOnClickListener {
-                                    writeButton.visibility = View.GONE
-                                    findViewById<Button>(R.id.prosseguirButton).visibility = View.VISIBLE
-
-                                    try {
-                                        writeTagData(tag, userName, local, clientPhotoLink)
-                                    } catch (e: Exception) {
-                                        Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(this, "Usuário não realizou nenhuma locação.", Toast.LENGTH_SHORT).show()
-                            }
-
-                            prosseguirButton.setOnClickListener {
-                                findViewById<Button>(R.id.encerrarButton).visibility = View.VISIBLE
-                                findViewById<Button>(R.id.abrirArmarioButton).visibility = View.VISIBLE
-                                prosseguirButton.visibility = View.GONE
-                            }
-
-                            abrirArmarioButton.setOnClickListener {
-
-                            }
-
-                            encerrarButton.setOnClickListener {
-
-                                try {
-                                    eraseTagData(tag)
-
+                                    writeTagData(tag, userName, local, clientPhotoLink1, clientPhotoLink2)
                                 } catch (e: Exception) {
                                     Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
                                 }
-
-                                val tempoFimLocacao = Date()
-
-                                val tempoInicioLocacaoTimestamp = document.getTimestamp("tempoInicioLocacao")
-                                val tempoInicioLocacao = tempoInicioLocacaoTimestamp?.toDate()
-
-                                val caucao = calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
-                                currentUser?.let { user ->
-                                    val userMap = hashMapOf(
-                                        "EstornoCaucao" to caucao
-                                    )
-
-                                    db.collection("locacao_pessoa").document(user.uid).set(userMap)
-                                }
                             }
+                        } else {
+                            Toast.makeText(this, "Usuário não realizou nenhuma locação.", Toast.LENGTH_SHORT).show()
                         }
-                }
+
+                        prosseguirButton.setOnClickListener {
+                            encerrarButton.visibility = View.VISIBLE
+                            abrirArmarioButton.visibility = View.VISIBLE
+                            prosseguirButton.visibility = View.GONE
+                        }
+
+                        abrirArmarioButton.setOnClickListener {
+                            // Lógica para abrir armário
+                        }
+
+                        encerrarButton.setOnClickListener {
+                            try {
+                                eraseTagData(tag)
+                            } catch (e: Exception) {
+                                Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
+                            }
+
+                            val tempoFimLocacao = Date()
+                            val tempoInicioLocacaoTimestamp = document.getTimestamp("tempoInicioLocacao")
+                            val tempoInicioLocacao = tempoInicioLocacaoTimestamp?.toDate()
+
+                            val caucao = calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
+                            val userMap = hashMapOf(
+                                "EstornoCaucao" to caucao
+                            )
+
+                            db.collection("locacao_pessoa").document(scannedData).set(userMap)
+                        }
+                    }
             }
         }
     }
@@ -148,8 +147,8 @@ class DiscoverTagActivity : AppCompatActivity() {
         nfcAdapter?.disableForegroundDispatch(this)
     }
 
-    private fun writeTagData(tag: Tag, userName: String?, local: String?, clientPhotoLink: String?) {
-        val userData = "Usuário: $userName\nLocal: $local\nImagem: $clientPhotoLink"
+    private fun writeTagData(tag: Tag, userName: String?, local: String?, clientPhotoLink1: String?, clientPhotoLink2: String?) {
+        val userData = "Usuário: $userName\nLocal: $local\nImagem1: $clientPhotoLink1\nImagem2: $clientPhotoLink2"
         val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, userData))
 
         val ndef = Ndef.get(tag)
@@ -161,7 +160,7 @@ class DiscoverTagActivity : AppCompatActivity() {
     }
 
     private fun eraseTagData(tag: Tag?) {
-        if (tag == null){
+        if (tag == null) {
             return
         }
 
@@ -174,6 +173,7 @@ class DiscoverTagActivity : AppCompatActivity() {
 
         Toast.makeText(this, "Os dados da TAG foram apagados com sucesso", Toast.LENGTH_SHORT).show()
     }
+
     private fun calcularCaucao(tempoInicioLocacao: Date?, tempoFimLocacao: Date): Double {
         tempoInicioLocacao ?: return 0.0 // Retorna 0 se o tempo de início da locação não estiver disponível
 
@@ -184,7 +184,6 @@ class DiscoverTagActivity : AppCompatActivity() {
         val tempoDecorridoHoras = tempoDecorridoMillis / 3600000.0 // 3600000 ms = 1 hora
 
         // 3. Consultar a tabela de preços para obter o preço correspondente ao tempo decorrido
-
         val precoPorHora = when {
             tempoDecorridoHoras >= 4 -> 150.0
             tempoDecorridoHoras >= 2 -> 100.0
@@ -196,4 +195,3 @@ class DiscoverTagActivity : AppCompatActivity() {
         return tempoDecorridoHoras * precoPorHora
     }
 }
-

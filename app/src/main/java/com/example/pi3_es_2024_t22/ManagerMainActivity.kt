@@ -23,6 +23,7 @@ class ManagerMainActivity : AppCompatActivity() {
     private lateinit var btnScanQR: Button
     private lateinit var txtScanned: TextView
     private lateinit var scannedLocation: String
+    private lateinit var btn_tag: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +35,7 @@ class ManagerMainActivity : AppCompatActivity() {
             insets
         }
 
+        btn_tag = findViewById(R.id.btn_tag)
         btnScanQR = findViewById(R.id.btnScanQR)
         txtScanned = findViewById(R.id.txtScanned)
         val gmsScannerOptions = configureScannerOption()
@@ -62,6 +64,11 @@ class ManagerMainActivity : AppCompatActivity() {
                     }
                 )
             }
+        }
+
+        btn_tag.setOnClickListener {
+            val intent = Intent(this, DiscoverTagActivity::class.java)
+            startActivity(intent)
         }
     }
 
