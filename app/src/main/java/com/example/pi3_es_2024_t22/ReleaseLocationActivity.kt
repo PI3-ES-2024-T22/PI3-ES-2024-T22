@@ -16,6 +16,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
+import java.util.*
 
 class ReleaseLocationActivity : AppCompatActivity() {
 
@@ -31,17 +35,21 @@ class ReleaseLocationActivity : AppCompatActivity() {
     private val CAMERA_REQUEST_CODE_1 = 1002
     private val CAMERA_REQUEST_CODE_2 = 1003
 
+    private val firestore = FirebaseFirestore.getInstance()
+    private val storageReference = FirebaseStorage.getInstance().reference
+    private var scannedData: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_release_location)
 
         // Get the scanned data from the intent
-        val scannedData = intent.getStringExtra("scannedData")
-        Log.d("DiscoverTagActivity", "Received scannedData: $scannedData")
+        scannedData = intent.getStringExtra("scannedData") ?: ""
+        Log.d("ReleaseLocationActivity", "Received scannedData: $scannedData")
 
         // Display the scanned data
         textViewScannedData = findViewById(R.id.textViewScannedData)
-        textViewScannedData.text = scannedData ?: "No data received"
+        textViewScannedData.text = scannedData.ifEmpty { "No data received" }
 
         // Handle RadioGroup selection and button click
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
@@ -143,16 +151,71 @@ class ReleaseLocationActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                CAMERA_REQUEST_CODE_1 -> handlePhotoResult(data, imageViewPhoto1, btnTakePhoto1)
-                CAMERA_REQUEST_CODE_2 -> handlePhotoResult(data, imageViewPhoto2, btnTakePhoto2)
+                CAMERA_REQUEST_CODE_1 -> handlePhotoResult(data, imageViewPhoto1, btnTakePhoto1, "photoUrl1")
+                CAMERA_REQUEST_CODE_2 -> handlePhotoResult(data, imageViewPhoto2, btnTakePhoto2, "photoUrl2")
             }
         }
     }
 
-    private fun handlePhotoResult(data: Intent?, imageView: ImageView, button: Button) {
+    private fun handlePhotoResult(data: Intent?, imageView: ImageView, button: Button, photoField: String) {
         val imageBitmap = data?.extras?.get("data") as Bitmap
         imageView.setImageBitmap(imageBitmap)
         button.visibility = Button.GONE
         imageView.visibility = ImageView.VISIBLE
+
+        // Save photo to Firebase Storage
+        savePhotoToFirebase(imageBitmap) { photoUrl ->
+            // Handle successful upload
+            Log.d("ReleaseLocationActivity", "Photo uploaded to Firebase: $photoUrl")
+
+            // Update locacao document with photo URL
+            updateLocacaoDocumentWithPhotoUrl(photoUrl, photoField)
+        }
+    }
+
+    private fun savePhotoToFirebase(bitmap: Bitmap, callback: (String) -> Unit) {
+        val filename = "${UUID.randomUUID()}.jpg"
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+        val ref = storageReference.child("photos/$filename.jpg")
+
+        ref.putBytes(data)
+            .addOnSuccessListener {
+                ref.downloadUrl.addOnSuccessListener{ uri ->
+                    callback(uri.toString())
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("ReleaseLocationActivity", "Failed to upload photo: $exception")
+            }
+    }
+
+    private fun updateLocacaoDocumentWithPhotoUrl(photoUrl: String, photoField: String) {
+        // Access Firestore collection and update document with photo URL
+        val locacoesCollection = firestore.collection("locacoes")
+        val locacaoDocument = locacoesCollection.document(scannedData)
+
+        Log.d("ReleaseLocationActivity", "Updating document: $scannedData with $photoField: $photoUrl")
+
+        locacaoDocument.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    // Document exists, update photo URL
+                    val updates = mapOf(photoField to photoUrl)
+                    locacaoDocument.update(updates)
+                        .addOnSuccessListener {
+                            Log.d("ReleaseLocationActivity", "Photo URL updated in Firestore")
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("ReleaseLocationActivity", "Failed to update photo URL: $exception")
+                        }
+                } else {
+                    Log.e("ReleaseLocationActivity", "Locacao document does not exist for ID: $scannedData")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("ReleaseLocationActivity", "Failed to fetch locacao document: $exception")
+            }
     }
 }
