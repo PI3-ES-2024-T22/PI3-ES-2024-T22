@@ -102,8 +102,7 @@ class NfcScannerActivity : AppCompatActivity() {
         }
         scannedData = builder.toString()
         Log.d("NfcScannerActivity", "Scanned data: $scannedData")
-        processScannedData(scannedData)
-        textView.text = scannedData
+        processScannedData(builder.toString())
     }
 
     @Throws(UnsupportedEncodingException::class)
@@ -116,7 +115,6 @@ class NfcScannerActivity : AppCompatActivity() {
 
     private fun processScannedData(scannedData: String?) {
         // Check if scannedData is not null and fetch data from Firestore
-        val scannedData = intent.getStringExtra("scannedData")
         if (scannedData != null) {
             firestore.collection("locacoes").document(scannedData)
                 .get()
