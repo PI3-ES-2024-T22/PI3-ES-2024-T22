@@ -48,11 +48,13 @@ class DiscoverTagActivity : AppCompatActivity() {
         if (intent?.action == NfcAdapter.ACTION_TAG_DISCOVERED) {
             tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
 
-                if (tag != null && scannedData != null) {
+            tag?.let {
+                if (scannedData != null) {
                     writeTagData(tag, scannedData!!)
                 } else {
                     Toast.makeText(this, "Nenhuma tag NFC detectada ou dados a gravar estão ausentes", Toast.LENGTH_SHORT).show()
                 }
+            }
         }
     }
 

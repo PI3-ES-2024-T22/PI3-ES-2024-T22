@@ -25,7 +25,21 @@
         android:theme="@style/Theme.Material3.Light">
         <activity
             android:name=".NfcScannerActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme" >
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ReleaseLocationActivity"
             android:exported="true"
