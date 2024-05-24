@@ -215,6 +215,7 @@ class NfcScannerActivity : AppCompatActivity() {
                             loadAndDisplayImage(photoUrl2, R.id.imageView2)
                         }
                         quickOpenButton.visibility = Button.VISIBLE
+                        finishLocation.visibility = Button.VISIBLE
                     } else {
                         textView.text = "No data found for ID: $scannedData"
                     }
