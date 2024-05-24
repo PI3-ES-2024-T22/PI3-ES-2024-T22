@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,16 +16,17 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.pi3_es_2024_t22.databinding.ActivityMapsBinding
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.example.pi3_es_2024_t22.databinding.ActivityMapsBinding
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,9 +35,6 @@ import com.google.gson.Gson
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
-import com.google.zxing.WriterException
-import com.google.zxing.common.BitMatrix
-import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import java.util.Calendar
@@ -198,49 +195,54 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     // sobreescrita da funcao ao clicker em um marcador
     override fun onMarkerClick(marker: Marker): Boolean {
 
+        if (isWithinRentalHours()) {
             navigateButton.visibility = FloatingActionButton.VISIBLE
             selectedMarker = marker
+        } else {
+            // Caso contrário, desabilite o botão de locação
+            lockerDialogButton.visibility = FloatingActionButton.GONE
+            infoOnlyButton.visibility = FloatingActionButton.GONE
+            Toast.makeText(this, "Disponível das 7h às 17h", Toast.LENGTH_LONG).show()
+        }
 
-             // Verificando distancia do usuario em relacao ao armario
-            selectedMarker?.let { marker ->
-                val distance = userLocation.distanceTo(Location("Marker").apply {
-                    latitude = marker.position.latitude
-                    longitude = marker.position.longitude
-                })
+        selectedMarker?.let { marker ->
+            val distance = userLocation.distanceTo(Location("Marker").apply {
+                latitude = marker.position.latitude
+                longitude = marker.position.longitude
+            })
 
-                val userUid = auth.currentUser?.uid
-                if (userUid != null) {
-                    // checando se o usuario atual possui cartao cadastrado
-                    firestore.collection("Pessoas").document(userUid).get()
-                        .addOnSuccessListener { documentSnapshot ->
-                            if (documentSnapshot.exists()) {
-                                val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
-                                if (hasCreditCard !== "" && distance <= 10000) {
-                                    // Mostrar botao para alugar armario caso o usuario tenha um cartao cadastrado
-                                    lockerDialogButton.visibility = FloatingActionButton.VISIBLE
-                                    infoOnlyButton.visibility = FloatingActionButton.GONE
-                                } else {
-                                    // Esconder botao para alugar armario caso o usuario nao tenha um cartao cadastrado
-                                    lockerDialogButton.visibility = FloatingActionButton.GONE
-                                    infoOnlyButton.visibility = FloatingActionButton.VISIBLE
-                                }
+            val userUid = auth.currentUser?.uid
+            if (userUid != null) {
+                // checando se o usuario atual possui cartao cadastrado
+                firestore.collection("Pessoas").document(userUid).get()
+                    .addOnSuccessListener { documentSnapshot ->
+                        if (documentSnapshot.exists()) {
+                            val hasCreditCard = documentSnapshot.get("Cartao") ?: ""
+                            if (hasCreditCard !== "" && distance <= 10000) {
+                                // Mostrar botao para alugar armario caso o usuario tenha um cartao cadastrado
+                                lockerDialogButton.visibility = FloatingActionButton.VISIBLE
+                                infoOnlyButton.visibility = FloatingActionButton.GONE
                             } else {
-                                // Log de erro caso nao seja possivel pegar o documento do usuario
-                                Log.e("UserDocument", "User document does not exist")
+                                // Esconder botao para alugar armario caso o usuario nao tenha um cartao cadastrado
+                                lockerDialogButton.visibility = FloatingActionButton.GONE
+                                infoOnlyButton.visibility = FloatingActionButton.VISIBLE
                             }
+                        } else {
+                            // Log de erro caso nao seja possivel pegar o documento do usuario
+                            Log.e("UserDocument", "User document does not exist")
                         }
-                        .addOnFailureListener { exception ->
-                            // Log de erro
-                            Log.e("Firestore", "Error getting user document: ", exception)
-                        }
-                } else {
-                    // Esconder botao para alugar armario caso o usuario nao esteja logado
-                    infoOnlyButton.visibility = FloatingActionButton.VISIBLE
-                    Log.e("User", "User is not logged in")
-                }
+                    }
+                    .addOnFailureListener { exception ->
+                        // Log de erro
+                        Log.e("Firestore", "Error getting user document: ", exception)
+                    }
+            } else {
+                // Esconder botao para alugar armario caso o usuario nao esteja logado
+                lockerDialogButton.visibility = FloatingActionButton.GONE
+                infoOnlyButton.visibility = FloatingActionButton.VISIBLE
             }
-            return true
-
+        }
+        return true
     }
 
     // sobreescrita da funcao ao clickar no mapa
@@ -425,5 +427,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             startActivity(intent)
         }
         finish()
+    }
+
+    private fun isWithinRentalHours(): Boolean {
+        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        return currentHour in 7..17 // Horário de funcionamento dos armários das 7h às 17h
     }
 }

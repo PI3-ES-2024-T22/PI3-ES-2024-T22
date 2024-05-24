@@ -65,6 +65,9 @@ class DiscoverTagActivity : AppCompatActivity() {
 
         fetchFirestoreData()
 
+        writeButton.visibility = View.VISIBLE
+
+
         writeButton.setOnClickListener {
             writeButton.visibility = View.GONE
             prosseguirButton.visibility = View.VISIBLE
@@ -113,28 +116,26 @@ class DiscoverTagActivity : AppCompatActivity() {
                         }
                 }
         }
+
+
     }
 
     //ENIGMA -> por algum motivo fetchFirestoreData() so funciona no onCreate mas nao no onNewIntent
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        setIntent(intent) // Adicione esta linha
 
         if (intent?.action == NfcAdapter.ACTION_TAG_DISCOVERED) {
             tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             tag?.let {
-                writeButton.visibility = View.VISIBLE
+                writeButton.visibility = View.GONE // Mova esta linha para aqui
                 clientImage1.visibility = View.VISIBLE
                 clientImage2.visibility = View.VISIBLE
                 tagDataTextView.text = "O usuário a alocar o armário:"
 
                 scannedData = intent.getStringExtra("scannedData")
-
-//                fetchFirestoreData()
             }
         }
-
-        scannedData = intent?.getStringExtra("scannedData")
-
     }
 
     private fun fetchFirestoreData() {
@@ -177,8 +178,8 @@ class DiscoverTagActivity : AppCompatActivity() {
                 }
         } catch (e: JSONException) {
             Log.e("DiscoverTagActivity", "Erro ao analisar o JSON", e)
-            // Trate o caso em que a string scannedData não é um JSON válido
         }
+
     }
 
     override fun onResume() {
@@ -192,6 +193,7 @@ class DiscoverTagActivity : AppCompatActivity() {
         )
         val intentFilters = arrayOf(IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED))
         nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
+
     }
 
     override fun onPause() {
@@ -260,3 +262,4 @@ class DiscoverTagActivity : AppCompatActivity() {
         return tempoDecorridoHoras * precoPorHora
     }
 }
+

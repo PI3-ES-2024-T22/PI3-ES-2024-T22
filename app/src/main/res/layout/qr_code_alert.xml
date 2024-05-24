@@ -10,7 +10,7 @@
         android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Voce possui uma locacao em andamento, mostre o QR code para valida-la." />
+        android:text="Voce possui uma locacao em andamento, mostre o QR code para o GERENTE para valida-la." />
 
     <ImageView
         android:id="@+id/qrCodeImageView"

@@ -10,6 +10,8 @@ import com.braintreepayments.cardform.view.CardForm
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.Button
+import android.graphics.Color
+
 
 class RegisterCreditCard : AppCompatActivity() {
     // Declaração das variáveis
@@ -35,6 +37,18 @@ class RegisterCreditCard : AppCompatActivity() {
             .cardholderName(CardForm.FIELD_REQUIRED)
             .actionLabel("Concluir")
             .setup(this@RegisterCreditCard)
+
+        // Definir a cor do texto dos EditTexts como branca
+        val cardholderNameEditText = cardForm.cardEditText
+        val cardNumberEditText = cardForm.cardholderNameEditText
+        val expirationEditText = cardForm.expirationDateEditText
+        val cvvEditText = cardForm.cvvEditText
+
+        cardholderNameEditText.setTextColor(Color.parseColor("#FFFFFF"))
+        cardNumberEditText.setTextColor(Color.parseColor("#FFFFFF"))
+        expirationEditText.setTextColor(Color.parseColor("#FFFFFF"))
+        cvvEditText.setTextColor(Color.parseColor("#FFFFFF"))
+
 
         // Configuração do campo de CVV
         cardForm.cvvEditText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD

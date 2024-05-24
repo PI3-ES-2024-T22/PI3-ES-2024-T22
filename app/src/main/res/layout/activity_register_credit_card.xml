@@ -10,14 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@drawable/btn_rounded">
+        android:background="@drawable/btn_rounded"
+        android:textColor="@color/white">
 
         <com.braintreepayments.cardform.view.CardForm
             android:id="@+id/cardForm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
     </FrameLayout>
 
     <Button

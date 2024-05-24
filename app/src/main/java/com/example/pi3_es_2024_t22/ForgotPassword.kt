@@ -57,6 +57,12 @@ class ForgotPassword : AppCompatActivity() {
                     if (task.isSuccessful) {
                         // Mensagem de sucesso ao enviar o e-mail de redefinição de senha
                         Toast.makeText(this@ForgotPassword, "Um email de recuperação de senha foi enviado para $email", Toast.LENGTH_SHORT).show()
+
+                        // Redireciona para tela de login
+                        val intent = Intent(applicationContext, Login::class.java)
+                        startActivity(intent)
+                        finish()
+
                     } else {
                         // Mensagem de falha ao enviar o e-mail de redefinição de senha
                         Toast.makeText(this@ForgotPassword, "Falha ao enviar email de recuperação de senha. Verifique o email e tente novamente.", Toast.LENGTH_SHORT).show()
