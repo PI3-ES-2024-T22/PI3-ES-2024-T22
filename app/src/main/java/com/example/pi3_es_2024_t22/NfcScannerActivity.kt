@@ -8,8 +8,10 @@ import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
@@ -110,21 +112,32 @@ class NfcScannerActivity : AppCompatActivity() {
 
     private fun processScannedData(scannedData: String?) {
         // Check if scannedData is not null and fetch data from Firestore
-
-
         if (scannedData != null) {
             firestore.collection("locacoes").document(scannedData)
                 .get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
-                        // Document exists, extract data and display
+                        // Document exists, extract data
                         val localId = documentSnapshot.getString("localId")
                         val preco = documentSnapshot.getString("preco")
                         val isActive = documentSnapshot.getBoolean("ativo")
+                        val photoUrl1 = documentSnapshot.getString("photoUrl1")
+                        val photoUrl2 = documentSnapshot.getString("photoUrl2")
 
                         // Display the fetched data on the screen
                         val infoText = "Local ID: $localId\nPreço: $preco\nAtivo: $isActive"
                         textView.text = infoText
+
+                        // Load and display images if URLs exist
+                        if (!photoUrl1.isNullOrEmpty()) {
+                            // Load and display image from photoUrl1
+                            loadAndDisplayImage(photoUrl1, R.id.imageView1)
+                        }
+
+                        if (!photoUrl2.isNullOrEmpty()) {
+                            // Load and display image from photoUrl2
+                            loadAndDisplayImage(photoUrl2, R.id.imageView2)
+                        }
                     } else {
                         textView.text = "No data found for ID: $scannedData"
                     }
@@ -133,9 +146,15 @@ class NfcScannerActivity : AppCompatActivity() {
                     Log.e("NfcScannerActivity", "Error fetching document", exception)
                     textView.text = "Error: ${exception.message}"
                 }
-        } else {
-            textView.text = "No scanned data available"
         }
+    }
+
+    private fun loadAndDisplayImage(photoUrl: String, imageViewId: Int) {
+        // Load and display image using Glide library
+        val imageView = findViewById<ImageView>(imageViewId)
+        Glide.with(this)
+            .load(photoUrl)
+            .into(imageView)
     }
 }
 
