@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 
@@ -18,6 +19,7 @@ class NfcScannerActivity : AppCompatActivity() {
     private lateinit var nfcAdapter: NfcAdapter
     private lateinit var textView: TextView
     private var scannedData: String? = null
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +27,7 @@ class NfcScannerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_nfc_scanner)
 
         textView = findViewById(R.id.textView)
+        firestore = FirebaseFirestore.getInstance()
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
         if (nfcAdapter == null) {
@@ -74,6 +77,8 @@ class NfcScannerActivity : AppCompatActivity() {
                 }
                 else -> Log.d("NfcScannerActivity", "Unexpected intent action: ${intent.action}")
             }
+
+            processScannedData()
         } else {
             Log.d("NfcScannerActivity", "Received null intent in onNewIntent")
         }
@@ -108,4 +113,34 @@ class NfcScannerActivity : AppCompatActivity() {
         val languageCodeLength = payload[0].toInt() and 63
         return String(payload, languageCodeLength + 1, payload.size - languageCodeLength - 1, Charset.forName(textEncoding))
     }
+
+    private fun processScannedData() {
+        // Check if scannedData is not null and fetch data from Firestore
+        val scannedData = intent.getStringExtra("scannedData")
+        if (scannedData != null) {
+            firestore.collection("locacoes").document(scannedData)
+                .get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        // Document exists, extract data and display
+                        val localId = documentSnapshot.getString("localId")
+                        val preco = documentSnapshot.getString("preco")
+                        val isActive = documentSnapshot.getBoolean("ativo")
+
+                        // Display the fetched data on the screen
+                        val infoText = "Local ID: $localId\nPreço: $preco\nAtivo: $isActive"
+                        textView.text = infoText
+                    } else {
+                        textView.text = "No data found for ID: $scannedData"
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("NfcScannerActivity", "Error fetching document", exception)
+                    textView.text = "Error: ${exception.message}"
+                }
+        } else {
+            textView.text = "No scanned data available"
+        }
+    }
 }
+
