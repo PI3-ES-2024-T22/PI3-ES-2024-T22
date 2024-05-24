@@ -1,20 +1,30 @@
 package com.example.pi3_es_2024_t22
 
+import android.Manifest
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
+import android.nfc.Tag
+import android.nfc.tech.Ndef
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
+import java.sql.Timestamp
+import java.util.Calendar
+import java.util.Date
 
 class NfcScannerActivity : AppCompatActivity() {
 
@@ -22,6 +32,11 @@ class NfcScannerActivity : AppCompatActivity() {
     private lateinit var textView: TextView
     private var scannedData: String? = null
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var quickOpenButton: Button
+    private lateinit var finishLocation: Button
+    private var tag: Tag? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,12 +46,72 @@ class NfcScannerActivity : AppCompatActivity() {
         textView = findViewById(R.id.textView)
         firestore = FirebaseFirestore.getInstance()
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        quickOpenButton = findViewById(R.id.btnQuickOpenLocker)
+        finishLocation = findViewById(R.id.btnfinishLocation)
+
+        val tempoInicioLocacao = Date()
+
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DATE, -1)
+        val tempoFimLocacao = calendar.time
+
+        val caucao = calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
+        val userMap = hashMapOf(
+            "EstornoCaucao" to caucao
+        )
+
+        quickOpenButton.setOnClickListener {
+            Toast.makeText(this, "Armário aberto momentaneamente", Toast.LENGTH_SHORT).show()
+        }
+
+        finishLocation.setOnClickListener{
+            // Erase the data from the scanned NFC tag
+            eraseTagData(tag)
+            calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
+        }
 
         if (nfcAdapter == null) {
             textView.text = "NFC is not available on this device."
             return
         }
     }
+
+    private fun eraseTagData(tag: Tag?) {
+        if (tag == null) return
+
+        val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, " "))
+
+        val ndef = Ndef.get(tag)
+        ndef?.connect()
+        ndef?.writeNdefMessage(newNdefMessage)
+        ndef?.close()
+
+        Toast.makeText(this, "Os dados da TAG foram apagados com sucesso", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun calcularCaucao(tempoInicioLocacao: Date?, tempoFimLocacao: Date): Double {
+        tempoInicioLocacao ?: return 0.0 // Retorna 0 se o tempo de início da locação não estiver disponível
+
+        // 1. Calcular o tempo decorrido em milissegundos
+        val tempoDecorridoMillis = tempoFimLocacao.time - tempoInicioLocacao.time
+
+        // 2. Converter o tempo decorrido de milissegundos para horas
+        val tempoDecorridoHoras = tempoDecorridoMillis / 3600000.0 // 3600000 ms = 1 hora
+
+        // 3. Consultar a tabela de preços para obter o preço correspondente
+        val precoPorHora = when {
+            tempoDecorridoHoras >= 4 -> 150.0
+            tempoDecorridoHoras >= 2 -> 100.0
+            tempoDecorridoHoras >= 1 -> 50.0
+            else -> 0.0
+        }
+
+        // 4. Calcular o valor do caução
+        return tempoDecorridoHoras * precoPorHora
+    }
+
+
+
 
     override fun onResume() {
         super.onResume()
@@ -70,6 +145,7 @@ class NfcScannerActivity : AppCompatActivity() {
                 NfcAdapter.ACTION_TECH_DISCOVERED -> {
                     Log.d("NfcScannerActivity", "NDEF discovered")
                     val rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+                    // tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
                     Log.d("NfcScannerActivity", "Raw NFC tag data: $rawMsgs")
 
                     if (rawMsgs != null) {
@@ -138,6 +214,7 @@ class NfcScannerActivity : AppCompatActivity() {
                             // Load and display image from photoUrl2
                             loadAndDisplayImage(photoUrl2, R.id.imageView2)
                         }
+                        quickOpenButton.visibility = Button.VISIBLE
                     } else {
                         textView.text = "No data found for ID: $scannedData"
                     }
