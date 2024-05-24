@@ -12,8 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.journeyapps.barcodescanner.BarcodeEncoder
 
 class MainActivity : AppCompatActivity() {
@@ -95,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.qr_code_alert, null)
         val qrCodeImageView = dialogView.findViewById<ImageView>(R.id.qrCodeImageView)
         val data = document.data.toString()
-        val qrCodeBitmap = generateQRCode(data)
+        val qrCodeBitmap = generateQRCode(document.get("id").toString())
         qrCodeImageView.setImageBitmap(qrCodeBitmap)
 
         val builder = AlertDialog.Builder(this)
@@ -120,15 +123,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Função para gerar um código QR a partir dos dados fornecidos
-    private fun generateQRCode(data: String): Bitmap? {
-        val multiFormatWriter = MultiFormatWriter()
-        try {
-            val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 800, 800)
-            val barcodeEncoder = BarcodeEncoder()
-            return barcodeEncoder.createBitmap(bitMatrix)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
+    private fun generateQRCode(id: String): Bitmap {
+        val gson = Gson()
+        val charset = Charsets.UTF_8
+        val byteArray = id.toByteArray(charset)
+
+        val hints = mapOf<EncodeHintType, ErrorCorrectionLevel>(Pair(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H))
+        val matrix = MultiFormatWriter().encode(String(byteArray, charset), BarcodeFormat.QR_CODE, 300, 300, hints)
+        val barcodeEncoder = BarcodeEncoder()
+        return barcodeEncoder.createBitmap(matrix)
     }
 }

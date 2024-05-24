@@ -323,16 +323,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             createdDocumentId = documentReference.id
 
                             // Exibir o QR code e esconder os elementos de entrada de preço
-                            val documentContent = mapOf(
-                                "selectedPrice" to selectedPrice,
-                                "referencePoint" to info["referencePoint"],
-                                "address" to info["address"],
-                                "lockerId" to info["id"],
-                                "userId" to userUid,
-                                "locacaoId" to createdDocumentId
-                            )
 
-                            val qrCodeBitmap = generateQRCode(documentContent)
+                            val qrCodeBitmap = generateQRCode(createdDocumentId)
                             qrCodeImageView.setImageBitmap(qrCodeBitmap)
                             qrCodeImageView.visibility = View.VISIBLE
 
@@ -386,11 +378,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
     // funcao de geracao do qr code
-    private fun generateQRCode(data: Map<String, String?>): Bitmap {
+    private fun generateQRCode(id: String): Bitmap {
         val gson = Gson()
-        val jsonString = gson.toJson(data)
         val charset = Charsets.UTF_8
-        val byteArray = jsonString.toByteArray(charset)
+        val byteArray = id.toByteArray(charset)
 
         val hints = mapOf<EncodeHintType, ErrorCorrectionLevel>(Pair(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H))
         val matrix = MultiFormatWriter().encode(String(byteArray, charset), BarcodeFormat.QR_CODE, 300, 300, hints)
