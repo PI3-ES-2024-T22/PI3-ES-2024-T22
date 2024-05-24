@@ -89,21 +89,15 @@ class NfcScannerActivity : AppCompatActivity() {
         Log.d("NfcScannerActivity", "processNfcMessages called with ${messages.size} messages")
         if (messages.isEmpty()) return
 
-        val builder = StringBuilder()
-        for (message in messages) {
-            for (record in message.records) {
-                try {
-                    val payload = readText(record)
-                    builder.append(payload).append("\n")
-                } catch (e: UnsupportedEncodingException) {
-                    Log.e("NfcScannerActivity", "Unsupported Encoding", e)
-                }
-            }
+        val record = messages[0].records[0]
+        try {
+            scannedData = readText(record)
+            Log.d("NfcScannerActivity", "Scanned data: $scannedData")
+        } catch (e: UnsupportedEncodingException) {
+            Log.e("NfcScannerActivity", "Unsupported Encoding", e)
         }
-        scannedData = builder.toString()
-        Log.d("NfcScannerActivity", "Scanned data: $scannedData")
+
         processScannedData(scannedData)
-        textView.text = scannedData
     }
 
     @Throws(UnsupportedEncodingException::class)
@@ -116,7 +110,8 @@ class NfcScannerActivity : AppCompatActivity() {
 
     private fun processScannedData(scannedData: String?) {
         // Check if scannedData is not null and fetch data from Firestore
-        val scannedData = intent.getStringExtra("scannedData")
+
+
         if (scannedData != null) {
             firestore.collection("locacoes").document(scannedData)
                 .get()
