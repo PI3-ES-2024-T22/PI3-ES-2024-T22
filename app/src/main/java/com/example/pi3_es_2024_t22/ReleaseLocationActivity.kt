@@ -37,7 +37,7 @@ class ReleaseLocationActivity : AppCompatActivity() {
 
         // Get the scanned data from the intent
         val scannedData = intent.getStringExtra("scannedData")
-        Log.d("ReleaseLocationActivity", "Received scannedData: $scannedData")
+        Log.d("DiscoverTagActivity", "Received scannedData: $scannedData")
 
         // Display the scanned data
         textViewScannedData = findViewById(R.id.textViewScannedData)

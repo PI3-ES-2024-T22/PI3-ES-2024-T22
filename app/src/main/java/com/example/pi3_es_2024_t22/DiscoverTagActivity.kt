@@ -19,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.Date
 
 class DiscoverTagActivity : AppCompatActivity() {
@@ -35,6 +37,9 @@ class DiscoverTagActivity : AppCompatActivity() {
     private lateinit var encerrarButton: Button
     private lateinit var abrirArmarioButton: Button
     private lateinit var encerramentoTextView: TextView
+
+    private var scannedData: String? = null
+    private var tag: Tag? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,121 +58,176 @@ class DiscoverTagActivity : AppCompatActivity() {
         abrirArmarioButton = findViewById(R.id.abrirArmarioButton)
         encerramentoTextView = findViewById(R.id.EncerrarTextoCliente)
 
+        scannedData = intent.getStringExtra("scannedData")
+
+        val scannedDataJson = JSONObject(scannedData)
+        val locacaoId = scannedDataJson.getString("locacaoId")
+
+        fetchFirestoreData()
+
+        writeButton.setOnClickListener {
+            writeButton.visibility = View.GONE
+            prosseguirButton.visibility = View.VISIBLE
+
+            try {
+                writeTagData(tag)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        prosseguirButton.setOnClickListener {
+            encerrarButton.visibility = View.VISIBLE
+            abrirArmarioButton.visibility = View.VISIBLE
+            prosseguirButton.visibility = View.GONE
+        }
+
+        abrirArmarioButton.setOnClickListener {
+            // Lógica para abrir armário
+        }
+
+        encerrarButton.setOnClickListener {
+            try {
+                eraseTagData(tag)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
+            }
+
+            val tempoFimLocacao = Date()
+            db.collection("locacoes").document(locacaoId).get()
+                .addOnSuccessListener { document ->
+                    val tempoInicioLocacaoTimestamp = document.getTimestamp("tempoInicioLocacao")
+                    val tempoInicioLocacao = tempoInicioLocacaoTimestamp?.toDate()
+
+                    val caucao = calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
+                    val userMap = hashMapOf(
+                        "EstornoCaucao" to caucao
+                    )
+
+                    db.collection("locacoes").document(locacaoId).update(userMap as Map<String, Any>)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Locação encerrada com sucesso.", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Erro ao encerrar a locação.", Toast.LENGTH_SHORT).show()
+                        }
+                }
+        }
     }
 
+    //ENIGMA -> por algum motivo fetchFirestoreData() so funciona no onCreate mas nao no onNewIntent
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 
         if (intent?.action == NfcAdapter.ACTION_TAG_DISCOVERED) {
-            val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             tag?.let {
                 writeButton.visibility = View.VISIBLE
                 clientImage1.visibility = View.VISIBLE
                 clientImage2.visibility = View.VISIBLE
                 tagDataTextView.text = "O usuário a alocar o armário:"
 
-                db.collection("locacoes").get()
-                    .addOnSuccessListener { documents ->
-                        if (documents.isEmpty) {
-                            // Não há documentos, faça algo aqui
-                            Log.d("DiscoverTagActivity", "Não há documentos na coleção 'locacoes'")
-                            return@addOnSuccessListener
-                        }
+                scannedData = intent.getStringExtra("scannedData")
 
-                        for (document in documents) {
-                            val userName = document.getString("Nome Completo")
-                            val local = document.getString("address") + ", " + document.getString("referencePoint")
-                            val clientPhotoLink1 = document.getString("clientPhotoLink1")
-                            val clientPhotoLink2 = document.getString("clientPhotoLink2")
-
-                            val userData = "Usuário: $userName\nLocal: $local"
-                            clienteInfo.text = userData
-
-                            try {
-                                Glide.with(this).load(clientPhotoLink1).into(clientImage1)
-                                Glide.with(this).load(clientPhotoLink2).into(clientImage2)
-                            } catch (e: Exception) {
-                                Log.e("DiscoverTagActivity", "Erro ao carregar a imagem", e)
-                            }
-
-                            writeButton.setOnClickListener {
-                                writeButton.visibility = View.GONE
-                                prosseguirButton.visibility = View.VISIBLE
-
-                                try {
-                                    writeTagData(tag, userName, local, clientPhotoLink1, clientPhotoLink2)
-                                } catch (e: Exception) {
-                                    Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            prosseguirButton.setOnClickListener {
-                                findViewById<Button>(R.id.encerrarButton).visibility = View.VISIBLE
-                                findViewById<Button>(R.id.abrirArmarioButton).visibility = View.VISIBLE
-                                prosseguirButton.visibility = View.GONE
-                            }
-
-                            abrirArmarioButton.setOnClickListener {
-
-                            }
-
-                            encerrarButton.setOnClickListener {
-                                try {
-                                    eraseTagData(tag)
-
-                                    val tempoFimLocacao = Date()
-
-                                    val tempoInicioLocacaoTimestamp = document.getTimestamp("tempoInicioLocacao")
-                                    val tempoInicioLocacao = tempoInicioLocacaoTimestamp?.toDate()
-
-                                    val caucao = calcularCaucao(tempoInicioLocacao, tempoFimLocacao)
-                                    val userMap = hashMapOf<String, Any>(
-                                        "EstornoCaucao" to caucao
-                                    )
-                                    db.collection("locacoes").document(document.id).update(userMap)
-
-                                } catch (e: Exception) {
-                                    Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e("DiscoverTagActivity", "Erro ao acessar o Firestore", exception)
-                    }
+//                fetchFirestoreData()
             }
+        }
+
+        scannedData = intent?.getStringExtra("scannedData")
+
+    }
+
+    private fun fetchFirestoreData() {
+        scannedData = intent.getStringExtra("scannedData")
+        Log.d("ScannedData", "Valor: $scannedData")
+
+        try {
+            val scannedDataJson = JSONObject(scannedData)
+            val locacaoId = scannedDataJson.getString("locacaoId")
+            Log.d("DiscoverTagActivity", "Valor de locacaoId: $locacaoId")
+
+            db.collection("locacoes").document(locacaoId).get()
+                .addOnSuccessListener { document ->
+                    scannedData = intent.getStringExtra("scannedData")
+
+                    Log.d("DiscoverTagActivity", "Document data: ${document.data}")
+                    Log.d("DiscoverTagActivity", "Document exists: ${document?.exists()}")
+
+                    val ativo = document.getBoolean("ativo") ?: false
+                    val localId = document.getString("localId") ?: ""
+                    val preco = document.getString("preco") ?: "0"
+                    val usuarioId = document.getString("usuarioId") ?: ""
+                    val clientPhotoLink1 = document.getString("imagelink1") ?: ""
+                    val clientPhotoLink2 = document.getString("imagelink2") ?: ""
+                    val locacaoID = document.id
+
+                    try {
+                        Glide.with(this@DiscoverTagActivity).load(clientPhotoLink1).into(clientImage1)
+                        Glide.with(this@DiscoverTagActivity).load(clientPhotoLink2).into(clientImage2)
+                    } catch (e: Exception) {
+                        Log.e("DiscoverTagActivity", "Erro ao carregar a imagem", e)
+                    }
+
+                    val userData = "Imagem1: $clientPhotoLink1\nImagem2: $clientPhotoLink2\nPreço: $preco\nAtivo: $ativo\nLocalId: $localId\nUsuarioId: $usuarioId\nLocacaoId: $locacaoID"
+                    clienteInfo.text = userData
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this@DiscoverTagActivity, "Erro ao acessar o Firestore", Toast.LENGTH_SHORT).show()
+                    Log.e("DiscoverTagActivity", "Erro ao acessar o Firestore", exception)
+                }
+        } catch (e: JSONException) {
+            Log.e("DiscoverTagActivity", "Erro ao analisar o JSON", e)
+            // Trate o caso em que a string scannedData não é um JSON válido
         }
     }
 
     override fun onResume() {
         super.onResume()
+
+        scannedData = intent.getStringExtra("scannedData")
+        Log.d("onResume", "Chegamos onResume com scannedData: $scannedData")
+
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_MUTABLE)
+            this, 0, Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_MUTABLE
+        )
         val intentFilters = arrayOf(IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED))
         nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
     }
 
     override fun onPause() {
         super.onPause()
+
         nfcAdapter?.disableForegroundDispatch(this)
     }
 
-    private fun writeTagData(tag: Tag, userName: String?, local: String?, clientPhotoLink1: String?, clientPhotoLink2: String?) {
-        val userData = "Usuário: $userName\nLocal: $local\nImagem1: $clientPhotoLink1\nImagem2: $clientPhotoLink2"
-        val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, userData))
+    private fun writeTagData(tag: Tag?) {
+        if (tag == null) return
 
-        val ndef = Ndef.get(tag)
-        ndef?.connect()
-        ndef?.writeNdefMessage(newNdefMessage)
-        ndef?.close()
+        //Salvar apenas ID
+        db.collection("locacoes").document(scannedData!!).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val localId = document.getString("localId") ?: ""
+                    val preco = document.getString("preco") ?: "0"
+                    val clientPhotoLink1 = document.getString("imagelink1")
+                    val clientPhotoLink2 = document.getString("imagelink2")
+                    val usuarioId = document.getString("usuarioId") ?: ""
 
-        Toast.makeText(this, "Informações do usuário ($userName) gravadas na tag NFC com sucesso.", Toast.LENGTH_SHORT).show()
+                    val userData = "Local: $localId\nPreço: $preco\nImagem1: $clientPhotoLink1\nImagem2: $clientPhotoLink2\nUsuarioId: $usuarioId"
+                    val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, userData))
+
+                    val ndef = Ndef.get(tag)
+                    ndef?.connect()
+                    ndef?.writeNdefMessage(newNdefMessage)
+                    ndef?.close()
+
+                    Toast.makeText(this, "Informações do usuário foram gravadas na tag NFC com sucesso.", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun eraseTagData(tag: Tag?) {
-        if (tag == null) {
-            return
-        }
+        if (tag == null) return
 
         val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, " "))
 
@@ -188,7 +248,7 @@ class DiscoverTagActivity : AppCompatActivity() {
         // 2. Converter o tempo decorrido de milissegundos para horas
         val tempoDecorridoHoras = tempoDecorridoMillis / 3600000.0 // 3600000 ms = 1 hora
 
-        // 3. Consultar a tabela de preços para obter o preço correspondente ao tempo decorrido
+        // 3. Consultar a tabela de preços para obter o preço correspondente
         val precoPorHora = when {
             tempoDecorridoHoras >= 4 -> 150.0
             tempoDecorridoHoras >= 2 -> 100.0
