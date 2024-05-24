@@ -24,10 +24,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.Light">
         <activity
+            android:name=".NfcScannerActivity"
+            android:exported="false" />
+        <activity
             android:name=".ReleaseLocationActivity"
             android:exported="true"
             android:theme="@style/AppTheme" />
-            />
         <activity
             android:name=".ManagerMainActivity"
             android:exported="true"
