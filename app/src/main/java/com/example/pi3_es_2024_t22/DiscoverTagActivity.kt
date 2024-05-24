@@ -9,7 +9,6 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
@@ -26,15 +25,6 @@ class DiscoverTagActivity : AppCompatActivity() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         scannedData = intent.getStringExtra("scannedData")
 
-        val writeButton: Button = findViewById(R.id.writeButton)
-
-        writeButton.setOnClickListener {
-            if (tag != null && scannedData != null) {
-                writeTagData(tag, scannedData!!)
-            } else {
-                Toast.makeText(this, "Nenhuma tag NFC detectada ou dados a gravar estão ausentes", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     override fun onResume() {
@@ -57,7 +47,12 @@ class DiscoverTagActivity : AppCompatActivity() {
 
         if (intent?.action == NfcAdapter.ACTION_TAG_DISCOVERED) {
             tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
-            Toast.makeText(this, "Tag NFC detectada", Toast.LENGTH_SHORT).show()
+
+                if (tag != null && scannedData != null) {
+                    writeTagData(tag, scannedData!!)
+                } else {
+                    Toast.makeText(this, "Nenhuma tag NFC detectada ou dados a gravar estão ausentes", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 
@@ -72,5 +67,12 @@ class DiscoverTagActivity : AppCompatActivity() {
         ndef?.close()
 
         Toast.makeText(this, "Dados gravados na tag NFC com sucesso", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, ManagerMainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
