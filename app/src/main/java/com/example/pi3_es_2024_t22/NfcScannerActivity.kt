@@ -78,7 +78,6 @@ class NfcScannerActivity : AppCompatActivity() {
                 else -> Log.d("NfcScannerActivity", "Unexpected intent action: ${intent.action}")
             }
 
-            processScannedData()
         } else {
             Log.d("NfcScannerActivity", "Received null intent in onNewIntent")
         }
@@ -103,6 +102,7 @@ class NfcScannerActivity : AppCompatActivity() {
         }
         scannedData = builder.toString()
         Log.d("NfcScannerActivity", "Scanned data: $scannedData")
+        processScannedData(scannedData)
         textView.text = scannedData
     }
 
@@ -114,7 +114,7 @@ class NfcScannerActivity : AppCompatActivity() {
         return String(payload, languageCodeLength + 1, payload.size - languageCodeLength - 1, Charset.forName(textEncoding))
     }
 
-    private fun processScannedData() {
+    private fun processScannedData(scannedData: String?) {
         // Check if scannedData is not null and fetch data from Firestore
         val scannedData = intent.getStringExtra("scannedData")
         if (scannedData != null) {
