@@ -195,7 +195,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     // sobreescrita da funcao ao clicker em um marcador
     override fun onMarkerClick(marker: Marker): Boolean {
 
-        if (isWithinRentalHours()) {
+        if (!isWithinRentalHours()) {
             navigateButton.visibility = FloatingActionButton.VISIBLE
             selectedMarker = marker
         } else {
@@ -304,6 +304,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 else -> null
             }
 
+            var hours = 0.0
+
+            if (selectedPrice == info["thirtyMinutesPrice"]) {
+                hours = 0.5
+            } else if (selectedPrice == info["oneHourPrice"]) {
+                hours = 1.0
+            } else if (selectedPrice == info["twoHoursPrice"]) {
+                hours = 2.0
+            } else if (selectedPrice == info["fourHoursPrice"]) {
+                hours = 4.0
+            } else if (selectedPrice == info["nowUntilSixPrice"]) {
+                hours = 0.0
+            }
+
             if (selectedPrice != null) {
                 // Criar documento na coleção "locacoes"
                 val locacoesRef = firestore.collection("locacoes")
@@ -317,6 +331,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         "preco" to selectedPrice,
                         "ativo" to false,
                         "data" to Calendar.getInstance().time.toString(),
+                        "horas" to hours
                     )
 
                     locacoesRef.add(locacaoData)
