@@ -283,6 +283,40 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // utilizando o horario atual do usuario para desabilitar o botao de alugar armario
         val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 
+        when {
+            currentHour in 17..18 -> {
+                radioThirtyMinutes.isEnabled = true
+                radioOneHour.isEnabled = true
+                radioTwoHours.isEnabled = false
+                radioFourHours.isEnabled = false
+                radioNowUntilSix.isEnabled = false
+            }
+            currentHour in 16..17 -> {
+                radioThirtyMinutes.isEnabled = true
+                radioOneHour.isEnabled = true
+                radioFourHours.isEnabled = false
+                radioNowUntilSix.isEnabled = false
+            }
+            currentHour in 7..18 -> {
+                radioThirtyMinutes.isEnabled = true
+                radioOneHour.isEnabled = true
+                radioTwoHours.isEnabled = true
+                radioFourHours.isEnabled = true
+                radioNowUntilSix.isEnabled = true
+            }
+            else -> {
+                radioThirtyMinutes.isEnabled = false
+                radioOneHour.isEnabled = false
+                radioTwoHours.isEnabled = false
+                radioFourHours.isEnabled = false
+                radioNowUntilSix.isEnabled = false
+            }
+        }
+
+        radioTwoHours.invalidate()
+        radioFourHours.invalidate()
+        radioNowUntilSix.invalidate()
+
         if (currentHour in 7..8) {
             radioNowUntilSix.isEnabled = true
         } else {
