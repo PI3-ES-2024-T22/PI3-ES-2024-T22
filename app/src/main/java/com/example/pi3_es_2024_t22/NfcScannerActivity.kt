@@ -160,17 +160,23 @@ class NfcScannerActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
-                        // Document exists, extract data
                         val localId = documentSnapshot.getString("localId")
-                        val preco = documentSnapshot.getString("preco")
-                        val isActive = documentSnapshot.getBoolean("ativo")
                         val photoUrl1 = documentSnapshot.getString("photoUrl1")
                         val photoUrl2 = documentSnapshot.getString("photoUrl2")
-                        val Data = documentSnapshot.getString("data")
+                        firestore.collection("locais").document(localId!!)
+                            .get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                if (documentSnapshot.exists()) {
+                                    val info = documentSnapshot.get("info") as? Map<String, Any>
+                                    if (info != null) {
+                                        val referencia = info["referencePoint"] as? String
+                                        val endereco = info["address"] as? String
+                                        val infoText = "Local: $referencia\n Endereço: $endereco\n"
 
-                        // Display the fetched data on the screen
-                        val infoText = "Data: $Data\nPreço: $preco\nAtivo: $isActive"
-                        textView.text = infoText
+                                        textView.text = infoText
+                                    }
+                                }
+                            }
 
                         // Load and display images if URLs exist
                         if (!photoUrl1.isNullOrEmpty()) {
