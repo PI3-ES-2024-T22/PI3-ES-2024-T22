@@ -263,8 +263,6 @@ class NfcScannerActivity : AppCompatActivity() {
                     Log.e("NfcScannerActivity", "Documento não encontrado no Firestore")
                 }
 
-                val intent = Intent(applicationContext, ManagerMainActivity::class.java)
-                startActivity(intent)
             }
             .addOnFailureListener { exception ->
                 Log.e("NfcScannerActivity", "Erro ao buscar documento: ", exception)
