@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.qr_code_alert, null)
         val qrCodeImageView = dialogView.findViewById<ImageView>(R.id.qrCodeImageView)
         val data = document.data.toString()
-        val qrCodeBitmap = generateQRCode(document.get("id").toString())
+        val qrCodeBitmap = generateQRCode(document.id)
         qrCodeImageView.setImageBitmap(qrCodeBitmap)
 
         val builder = AlertDialog.Builder(this)
@@ -124,7 +124,6 @@ class MainActivity : AppCompatActivity() {
 
     // Função para gerar um código QR a partir dos dados fornecidos
     private fun generateQRCode(id: String): Bitmap {
-        val gson = Gson()
         val charset = Charsets.UTF_8
         val byteArray = id.toByteArray(charset)
 

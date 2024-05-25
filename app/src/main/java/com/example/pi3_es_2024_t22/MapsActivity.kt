@@ -316,6 +316,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         "localId" to markerId,
                         "preco" to selectedPrice,
                         "ativo" to false,
+                        "data" to Calendar.getInstance().time.toString(),
                     )
 
                     locacoesRef.add(locacaoData)
