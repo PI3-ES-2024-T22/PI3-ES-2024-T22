@@ -19,14 +19,13 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
-import java.util.*
+import java.util.UUID
 
 class ReleaseLocationActivity : AppCompatActivity() {
 
     private lateinit var textViewScannedData: TextView
     private lateinit var btnTakePhoto1: Button
     private lateinit var btnTakePhoto2: Button
-    private lateinit var finishRelease: Button
     private lateinit var imageViewPhoto1: ImageView
     private lateinit var imageViewPhoto2: ImageView
     private lateinit var btn_tag: Button
@@ -56,7 +55,6 @@ class ReleaseLocationActivity : AppCompatActivity() {
         val btnConfirm: Button = findViewById(R.id.btnConfirm)
         btnTakePhoto1 = findViewById(R.id.btnTakePhoto1)
         btnTakePhoto2 = findViewById(R.id.btnTakePhoto2)
-        // finishRelease = findViewById(R.id.finishRelease)
         imageViewPhoto1 = findViewById(R.id.imageViewPhoto1)
         imageViewPhoto2 = findViewById(R.id.imageViewPhoto2)
         btn_tag = findViewById(R.id.btn_tag)
@@ -70,6 +68,8 @@ class ReleaseLocationActivity : AppCompatActivity() {
             } else {
                 textViewScannedData.text = "Please select an option"
             }
+
+            btnConfirm.visibility = Button.GONE
         }
 
         btnTakePhoto1.setOnClickListener {

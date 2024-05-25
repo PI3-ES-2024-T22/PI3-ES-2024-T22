@@ -27,6 +27,7 @@ class NfcScannerActivity : AppCompatActivity() {
     private lateinit var textView: TextView
     private var scannedData: String? = null
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var quickOpenButton: Button
     private lateinit var finishLocation: Button
     private var scannedTag: Tag? = null
 
@@ -38,7 +39,12 @@ class NfcScannerActivity : AppCompatActivity() {
         textView = findViewById(R.id.textView)
         firestore = FirebaseFirestore.getInstance()
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        quickOpenButton = findViewById(R.id.btnQuickOpenLocker)
         finishLocation = findViewById(R.id.btnfinishLocation)
+
+        quickOpenButton.setOnClickListener {
+            Toast.makeText(this, "Armário aberto momentaneamente", Toast.LENGTH_SHORT).show()
+        }
 
         finishLocation.setOnClickListener {
             try {
@@ -211,7 +217,7 @@ class NfcScannerActivity : AppCompatActivity() {
                         quickOpenButton.visibility = Button.VISIBLE
                         finishLocation.visibility = Button.VISIBLE
                     } else {
-                        textView.text = "No data found for ID: $scannedData"
+                        textView.text = "TAG não encontrada no Firestore"
                     }
                 }
                 .addOnFailureListener { exception ->
