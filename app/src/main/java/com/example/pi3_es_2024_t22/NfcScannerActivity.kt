@@ -1,10 +1,8 @@
 package com.example.pi3_es_2024_t22
 
-import android.Manifest
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
@@ -17,12 +15,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
-import java.util.Date
 
 class NfcScannerActivity : AppCompatActivity() {
 
@@ -51,8 +48,11 @@ class NfcScannerActivity : AppCompatActivity() {
         }
 
         finishLocation.setOnClickListener{
-            // Erase the data from the scanned NFC tag
-            eraseTagData()
+            try {
+                eraseTagData()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
+            }
         }
 
         if (nfcAdapter == null) {
@@ -64,12 +64,18 @@ class NfcScannerActivity : AppCompatActivity() {
     private fun eraseTagData() {
         // Erase the data from the scanned NFC tag
         if (scannedTag != null) {
-            val ndef = Ndef.get(scannedTag)
-            ndef?.connect()
-            val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, ""))
-            ndef?.writeNdefMessage(newNdefMessage)
-            ndef?.close()
-            Toast.makeText(this, "Os dados da TAG foram apagados com sucesso", Toast.LENGTH_SHORT).show()
+            try {
+                val ndef = Ndef.get(scannedTag)
+                ndef?.connect()
+                val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, ""))
+                ndef?.writeNdefMessage(newNdefMessage)
+                ndef?.close()
+                Toast.makeText(this, "Os dados da TAG foram apagados com sucesso", Toast.LENGTH_SHORT).show()
+            } catch (e: IOException) {
+                Toast.makeText(this, "Erro ao conectar com a tag NFC. Por favor, tente novamente.", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(this, "Nenhuma tag NFC foi escaneada", Toast.LENGTH_SHORT).show()
         }
@@ -154,16 +160,23 @@ class NfcScannerActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
-                        // Document exists, extract data
                         val localId = documentSnapshot.getString("localId")
-                        val preco = documentSnapshot.getString("preco")
-                        val isActive = documentSnapshot.getBoolean("ativo")
                         val photoUrl1 = documentSnapshot.getString("photoUrl1")
                         val photoUrl2 = documentSnapshot.getString("photoUrl2")
+                        firestore.collection("locais").document(localId!!)
+                            .get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                if (documentSnapshot.exists()) {
+                                    val info = documentSnapshot.get("info") as? Map<String, Any>
+                                    if (info != null) {
+                                        val referencia = info["referencePoint"] as? String
+                                        val endereco = info["address"] as? String
+                                        val infoText = "Local: $referencia\n Endereço: $endereco\n"
 
-                        // Display the fetched data on the screen
-                        val infoText = "Local ID: $localId\nPreço: $preco\nAtivo: $isActive"
-                        textView.text = infoText
+                                        textView.text = infoText
+                                    }
+                                }
+                            }
 
                         // Load and display images if URLs exist
                         if (!photoUrl1.isNullOrEmpty()) {
