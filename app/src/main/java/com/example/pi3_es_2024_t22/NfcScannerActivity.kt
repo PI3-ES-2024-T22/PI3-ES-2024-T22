@@ -27,10 +27,8 @@ class NfcScannerActivity : AppCompatActivity() {
     private lateinit var textView: TextView
     private var scannedData: String? = null
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var quickOpenButton: Button
     private lateinit var finishLocation: Button
     private var scannedTag: Tag? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,16 +38,15 @@ class NfcScannerActivity : AppCompatActivity() {
         textView = findViewById(R.id.textView)
         firestore = FirebaseFirestore.getInstance()
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        quickOpenButton = findViewById(R.id.btnQuickOpenLocker)
         finishLocation = findViewById(R.id.btnfinishLocation)
 
-        quickOpenButton.setOnClickListener {
-            Toast.makeText(this, "Armário aberto momentaneamente", Toast.LENGTH_SHORT).show()
-        }
-
-        finishLocation.setOnClickListener{
+        finishLocation.setOnClickListener {
             try {
-                eraseTagData()
+                if (scannedData != null) {
+                    calcularCaucao(scannedData!!)
+                } else {
+                    Toast.makeText(this, "Nenhuma tag NFC foi escaneada", Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
                 Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
             }
@@ -70,15 +67,32 @@ class NfcScannerActivity : AppCompatActivity() {
                 val newNdefMessage = NdefMessage(NdefRecord.createTextRecord(null, ""))
                 ndef?.writeNdefMessage(newNdefMessage)
                 ndef?.close()
-                Toast.makeText(this, "Os dados da TAG foram apagados com sucesso", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Os dados da TAG foram apagados com sucesso",
+                    Toast.LENGTH_SHORT
+                ).show()
             } catch (e: IOException) {
-                Toast.makeText(this, "Erro ao conectar com a tag NFC. Por favor, tente novamente.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Erro ao conectar com a tag NFC. Por favor, tente novamente.",
+                    Toast.LENGTH_SHORT
+                ).show()
             } catch (e: Exception) {
                 Toast.makeText(this, "Mantenha a TAG próxima ao celular", Toast.LENGTH_SHORT).show()
             }
         } else {
             Toast.makeText(this, "Nenhuma tag NFC foi escaneada", Toast.LENGTH_SHORT).show()
         }
+
+        firestore.collection("locacoes").document(scannedData!!)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("Firestore", "Documento apagado com sucesso")
+            }
+            .addOnFailureListener { e ->
+                Log.w("Firestore", "Erro ao apagar documento", e)
+            }
     }
 
     override fun onResume() {
@@ -120,6 +134,7 @@ class NfcScannerActivity : AppCompatActivity() {
                         processNfcMessages(messages)
                     }
                 }
+
                 else -> Log.d("NfcScannerActivity", "Unexpected intent action: ${intent.action}")
             }
 
@@ -150,7 +165,12 @@ class NfcScannerActivity : AppCompatActivity() {
         val payload = record.payload
         val textEncoding = if ((payload[0].toInt() and 128) == 0) "UTF-8" else "UTF-16"
         val languageCodeLength = payload[0].toInt() and 63
-        return String(payload, languageCodeLength + 1, payload.size - languageCodeLength - 1, Charset.forName(textEncoding))
+        return String(
+            payload,
+            languageCodeLength + 1,
+            payload.size - languageCodeLength - 1,
+            Charset.forName(textEncoding)
+        )
     }
 
     private fun processScannedData(scannedData: String?) {
@@ -208,5 +228,42 @@ class NfcScannerActivity : AppCompatActivity() {
             .load(photoUrl)
             .into(imageView)
     }
-}
 
+    private fun calcularCaucao(scannedData: String) {
+        var totalCaucao = 1000.0 // Valor de uma diária
+
+        firestore.collection("locacoes").document(scannedData)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val preco = documentSnapshot.getString("preco")?.toDoubleOrNull()
+                    if (preco != null) {
+                        totalCaucao -= preco
+                    }
+
+                    // Criar um novo campo na coleção "estornos" e salvar o valor de totalCaucao
+                    val estornoData = hashMapOf(
+                        "totalCaucao" to totalCaucao,
+                        "ID" to scannedData
+                    )
+
+                    firestore.collection("estornos")
+                        .add(estornoData)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Dados de estorno salvos com sucesso")
+                            eraseTagData() // Chama a função eraseTagData aqui após salvar o estorno
+                            Toast.makeText(this, "Estorno realizado com sucesso", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Firestore", "Erro ao salvar dados de estorno", e)
+                            Toast.makeText(this, "Erro ao realizar estorno", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    Log.e("NfcScannerActivity", "Documento não encontrado no Firestore")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("NfcScannerActivity", "Erro ao buscar documento: ", exception)
+            }
+    }
+}
