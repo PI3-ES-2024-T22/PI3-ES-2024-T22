@@ -21,8 +21,10 @@ import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 
+// Classe para lidar com a leitura e escrita de tags NFC
 class NfcScannerActivity : AppCompatActivity() {
 
+    // Declaração de variáveis
     private lateinit var nfcAdapter: NfcAdapter
     private lateinit var textView: TextView
     private var scannedData: String? = null
@@ -31,17 +33,19 @@ class NfcScannerActivity : AppCompatActivity() {
     private lateinit var finishLocation: Button
     private var scannedTag: Tag? = null
 
+    // Método chamado quando a atividade é criada
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("NfcScannerActivity", "onCreate called")
         setContentView(R.layout.activity_nfc_scanner)
 
+        // Inicialização de variáveis
         textView = findViewById(R.id.textView)
         firestore = FirebaseFirestore.getInstance()
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         quickOpenButton = findViewById(R.id.btnQuickOpenLocker)
         finishLocation = findViewById(R.id.btnfinishLocation)
 
+        // Configuração dos botões
         quickOpenButton.setOnClickListener {
             Toast.makeText(this, "Armário aberto momentaneamente", Toast.LENGTH_SHORT).show()
         }
@@ -58,14 +62,15 @@ class NfcScannerActivity : AppCompatActivity() {
             }
         }
 
+        // Verificar se o adaptador NFC está disponível
         if (nfcAdapter == null) {
             textView.text = "NFC is not available on this device."
             return
         }
     }
 
+    // Método para apagar os dados da tag NFC escaneada
     private fun eraseTagData() {
-        // Erase the data from the scanned NFC tag
         if (scannedTag != null) {
             try {
                 val ndef = Ndef.get(scannedTag)
@@ -91,6 +96,7 @@ class NfcScannerActivity : AppCompatActivity() {
             Toast.makeText(this, "Nenhuma tag NFC foi escaneada", Toast.LENGTH_SHORT).show()
         }
 
+        // Apagar o documento correspondente à tag NFC do Firestore
         firestore.collection("locacoes").document(scannedData!!)
             .delete()
             .addOnSuccessListener {
@@ -101,9 +107,9 @@ class NfcScannerActivity : AppCompatActivity() {
             }
     }
 
+    // Método chamado quando a atividade é retomada
     override fun onResume() {
         super.onResume()
-        Log.d("NfcScannerActivity", "onResume called")
         val intent = Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
         val intentFilters = arrayOf<IntentFilter>(
@@ -114,51 +120,40 @@ class NfcScannerActivity : AppCompatActivity() {
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
     }
 
+    // Método chamado quando a atividade é pausada
     override fun onPause() {
         super.onPause()
-        Log.d("NfcScannerActivity", "onPause called")
         nfcAdapter.disableForegroundDispatch(this)
     }
 
+    // Método chamado quando uma nova intenção é recebida
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
-
-        Log.d("NfcScannerActivity", "onNewIntent called")
 
         if (intent != null) {
             when (intent.action) {
                 NfcAdapter.ACTION_NDEF_DISCOVERED,
                 NfcAdapter.ACTION_TAG_DISCOVERED,
                 NfcAdapter.ACTION_TECH_DISCOVERED -> {
-                    Log.d("NfcScannerActivity", "NDEF discovered")
                     val rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
-                    Log.d("NfcScannerActivity", "Raw NFC tag data: $rawMsgs")
 
                     if (rawMsgs != null) {
                         val messages = rawMsgs.map { it as NdefMessage }.toTypedArray()
                         processNfcMessages(messages)
                     }
                 }
-
-                else -> Log.d("NfcScannerActivity", "Unexpected intent action: ${intent.action}")
             }
-
-        } else {
-            Log.d("NfcScannerActivity", "Received null intent in onNewIntent")
         }
-
-        Log.d("NfcScannerActivity", "onNewIntent finished")
     }
 
+    // Método para processar as mensagens NFC recebidas
     private fun processNfcMessages(messages: Array<NdefMessage>) {
-        Log.d("NfcScannerActivity", "processNfcMessages called with ${messages.size} messages")
         if (messages.isEmpty()) return
 
         val record = messages[0].records[0]
         try {
             scannedData = readText(record)
-            Log.d("NfcScannerActivity", "Scanned data: $scannedData")
         } catch (e: UnsupportedEncodingException) {
             Log.e("NfcScannerActivity", "Unsupported Encoding", e)
         }
@@ -166,6 +161,7 @@ class NfcScannerActivity : AppCompatActivity() {
         processScannedData(scannedData)
     }
 
+    // Método para ler o texto de um registro NDEF
     @Throws(UnsupportedEncodingException::class)
     private fun readText(record: NdefRecord): String {
         val payload = record.payload
@@ -179,8 +175,8 @@ class NfcScannerActivity : AppCompatActivity() {
         )
     }
 
+    // Método para processar os dados escaneados
     private fun processScannedData(scannedData: String?) {
-        // Check if scannedData is not null and fetch data from Firestore
         if (scannedData != null) {
             firestore.collection("locacoes").document(scannedData)
                 .get()
@@ -206,12 +202,10 @@ class NfcScannerActivity : AppCompatActivity() {
 
                         // Load and display images if URLs exist
                         if (!photoUrl1.isNullOrEmpty()) {
-                            // Load and display image from photoUrl1
                             loadAndDisplayImage(photoUrl1, R.id.imageView1)
                         }
 
                         if (!photoUrl2.isNullOrEmpty()) {
-                            // Load and display image from photoUrl2
                             loadAndDisplayImage(photoUrl2, R.id.imageView2)
                         }
                         quickOpenButton.visibility = Button.VISIBLE
@@ -227,14 +221,15 @@ class NfcScannerActivity : AppCompatActivity() {
         }
     }
 
+    // Método para carregar e exibir uma imagem a partir de uma URL
     private fun loadAndDisplayImage(photoUrl: String, imageViewId: Int) {
-        // Load and display image using Glide library
         val imageView = findViewById<ImageView>(imageViewId)
         Glide.with(this)
             .load(photoUrl)
             .into(imageView)
     }
 
+    // Método para calcular o valor do estorno
     private fun calcularCaucao(scannedData: String) {
         var totalCaucao = 1000.0 // Valor de uma diária
 

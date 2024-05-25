@@ -42,15 +42,12 @@ class ReleaseLocationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_release_location)
 
-        // Get the scanned data from the intent
         scannedData = intent.getStringExtra("scannedData") ?: ""
         Log.d("ReleaseLocationActivity", "Received scannedData: $scannedData")
 
-        // Display the scanned data
         textViewScannedData = findViewById(R.id.textViewScannedData)
         textViewScannedData.text = scannedData.ifEmpty { "No data received" }
 
-        // Handle RadioGroup selection and button click
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
         val btnConfirm: Button = findViewById(R.id.btnConfirm)
         btnTakePhoto1 = findViewById(R.id.btnTakePhoto1)
@@ -163,12 +160,9 @@ class ReleaseLocationActivity : AppCompatActivity() {
         button.visibility = Button.GONE
         imageView.visibility = ImageView.VISIBLE
 
-        // Save photo to Firebase Storage
         savePhotoToFirebase(imageBitmap) { photoUrl ->
-            // Handle successful upload
             Log.d("ReleaseLocationActivity", "Photo uploaded to Firebase: $photoUrl")
 
-            // Update locacao document with photo URL
             updateLocacaoDocumentWithPhotoUrl(photoUrl, photoField)
         }
     }
@@ -192,7 +186,6 @@ class ReleaseLocationActivity : AppCompatActivity() {
     }
 
     private fun updateLocacaoDocumentWithPhotoUrl(photoUrl: String, photoField: String) {
-        // Access Firestore collection and update document with photo URL
         val locacoesCollection = firestore.collection("locacoes")
         val locacaoDocument = locacoesCollection.document(scannedData)
 
@@ -201,7 +194,6 @@ class ReleaseLocationActivity : AppCompatActivity() {
         locacaoDocument.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    // Document exists, update photo URL
                     val updates = mapOf(photoField to photoUrl)
                     locacaoDocument.update(updates)
                         .addOnSuccessListener {
