@@ -80,7 +80,7 @@ class ManagerMainActivity : AppCompatActivity() {
     private fun startQRScanner() {
         val integrator = IntentIntegrator(this)
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-        integrator.setPrompt("Scan a QR code")
+        integrator.setPrompt("Escaneie o código QR para liberar a locação")
         integrator.setCameraId(0) // Use a câmera específica do dispositivo
         integrator.setBeepEnabled(false)
         integrator.setBarcodeImageEnabled(true)

@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:background="@drawable/degrade">
 
     <TextView
         android:id="@+id/textView"
@@ -11,7 +12,8 @@
         android:layout_height="wrap_content"
         android:text="Escaneie a pulseira NFC do cliente"
         android:textSize="18sp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"/>
 
     <ImageView
         android:id="@+id/imageView1"
@@ -31,18 +33,22 @@
 
     <Button
         android:id="@+id/btnQuickOpenLocker"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Abrir momentaneamente"
         android:layout_marginTop="16dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_width="280dp"
+        android:background="@drawable/btn_rounded"
+        android:textColor="@color/white"/>
 
     <Button
         android:id="@+id/btnfinishLocation"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Finalizar locação"
         android:layout_marginTop="16dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_width="280dp"
+        android:background="@drawable/btn_rounded"
+        android:textColor="@color/white"/>
 
 </LinearLayout>

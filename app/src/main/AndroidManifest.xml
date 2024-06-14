@@ -47,7 +47,7 @@
         <activity
             android:name=".ManagerMainActivity"
             android:exported="true"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/Theme.Design.NoActionBar" />
         <activity
             android:name=".DiscoverTagActivity"
             android:exported="true"

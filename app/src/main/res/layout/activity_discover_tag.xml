@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/degrade">
 
     <TextView
         android:id="@+id/tagDataTextView"
@@ -15,8 +16,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@android:color/black"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:textColor="@color/white"/>
 
     <ImageView
         android:id="@+id/tagDataImage1"
@@ -48,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@id/tagDataImage2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:padding="16dp"
         android:visibility="invisible"/>
 
@@ -108,8 +109,9 @@
         app:layout_constraintTop_toBottomOf="@id/tagClienteInfo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:padding="16dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

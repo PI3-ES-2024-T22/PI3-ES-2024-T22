@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReleaseLocationActivity">
+    tools:context=".ReleaseLocationActivity"
+    android:background="@drawable/degrade">
 
     <TextView
         android:id="@+id/textViewScannedData"
@@ -16,7 +17,8 @@
         android:text="Scanned Data"
         android:textSize="18sp"
         android:layout_marginTop="16dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:textColor="@color/white"/>
 
     <RadioGroup
         android:id="@+id/radioGroup"
@@ -26,42 +28,52 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:textColor="@color/white">
 
         <RadioButton
             android:id="@+id/radioButtonOnePerson"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1 Pessoa"/>
+            android:text="1 Pessoa"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white"/>
 
         <RadioButton
             android:id="@+id/radioButtonTwoPeople"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2 Pessoas"/>
+            android:text="2 Pessoas"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white"/>
 
     </RadioGroup>
 
     <Button
         android:id="@+id/btnConfirm"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Confirmar"
         app:layout_constraintTop_toBottomOf="@id/radioGroup"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:background="@drawable/btn_rounded"
+        android:layout_width="280dp"
+        android:textColor="@color/white"
+        />
 
     <Button
         android:id="@+id/btnTakePhoto1"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_width="200dp"
         android:text="Tirar Foto"
         app:layout_constraintTop_toBottomOf="@id/btnConfirm"
+        android:background="@drawable/btn_rounded"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:textColor="@color/white"/>
 
     <ImageView
         android:id="@+id/imageViewPhoto1"
@@ -75,14 +87,16 @@
 
     <Button
         android:id="@+id/btnTakePhoto2"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Tirar Foto"
+        android:text="Tirar Foto 2"
         app:layout_constraintTop_toBottomOf="@id/imageViewPhoto1"
+        android:background="@drawable/btn_rounded"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:textColor="@color/white"/>
 
     <ImageView
         android:id="@+id/imageViewPhoto2"
@@ -98,10 +112,12 @@
         android:id="@+id/btn_tag"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
         android:layout_marginTop="44dp"
+        android:background="@drawable/btn_rounded"
         android:gravity="center"
-        android:text="Scan Tag"
+        android:text="Escanear Tag"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageViewPhoto2" />
 
