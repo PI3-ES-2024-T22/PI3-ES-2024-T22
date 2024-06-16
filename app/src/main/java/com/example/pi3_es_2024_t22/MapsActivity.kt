@@ -195,7 +195,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     // sobreescrita da funcao ao clicker em um marcador
     override fun onMarkerClick(marker: Marker): Boolean {
 
-        if (!isWithinRentalHours()) {
+        if (isWithinRentalHours()) {
             navigateButton.visibility = FloatingActionButton.VISIBLE
             selectedMarker = marker
         } else {
@@ -471,7 +471,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun isWithinRentalHours(): Boolean {
-        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        return currentHour in 7..17 // Horário de funcionamento dos armários das 7h às 17h
+        return true
     }
 }
